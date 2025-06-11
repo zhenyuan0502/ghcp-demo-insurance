@@ -11,12 +11,11 @@ import {
   MenuItem,
   Box,
   Divider,
-  Checkbox,
-  FormControlLabel
+  Checkbox, FormControlLabel
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useEffect } from 'react';
-import axios from 'axios';
+import { apiService } from '../services/apiService';
 
 interface QuoteFormData {
   productType: string;
@@ -35,7 +34,7 @@ interface QuoteFormData {
 const QuoteForm: React.FC = () => {
   const { control, handleSubmit, watch, setValue, clearErrors, formState: { errors } } = useForm<QuoteFormData>();
   const sameAsInsured = watch('sameAsInsured', false);
-  
+
   // Watch purchaser fields to sync with insured fields
   const purchaserGender = watch('purchaserGender');
   const purchaserAge = watch('purchaserAge');
@@ -50,13 +49,13 @@ const QuoteForm: React.FC = () => {
       // Clear any validation errors for insured fields
       clearErrors(['insuredGender', 'insuredAge', 'insuredOccupation']);
     }
-  }, [sameAsInsured, purchaserGender, purchaserAge, purchaserOccupation, setValue, clearErrors]);  const onSubmit = async (data: QuoteFormData) => {
+  }, [sameAsInsured, purchaserGender, purchaserAge, purchaserOccupation, setValue, clearErrors]); const onSubmit = async (data: QuoteFormData) => {
     try {      // Convert the Vietnamese form data to the backend format
       const purchaserFullName = `${data.purchaserGender === 'male' ? 'Anh' : 'Chị'} Khách hàng ${data.purchaserGender === 'male' ? 'Nam' : 'Nữ'}`;
-      const insuredFullName = data.sameAsInsured 
-        ? purchaserFullName 
+      const insuredFullName = data.sameAsInsured
+        ? purchaserFullName
         : `${data.insuredGender === 'male' ? 'Anh' : 'Chị'} Người được bảo hiểm ${data.insuredGender === 'male' ? 'Nam' : 'Nữ'}`;
-      
+
       const backendData = {
         firstName: 'Khách hàng',
         lastName: data.purchaserGender === 'male' ? 'Nam' : 'Nữ',
@@ -68,9 +67,8 @@ const QuoteForm: React.FC = () => {
         coverageAmount: data.insuranceAmount.toString(),
         age: Number(data.purchaserAge) // Ensure age is converted to number
       };
-      
-      const response = await axios.post('http://localhost:5000/api/quote', backendData);
-      console.log('Quote submitted:', response.data);
+      const response = await apiService.createQuote(backendData);
+      console.log('Quote submitted:', response);
       alert('Báo giá đã được gửi thành công!');
     } catch (error) {
       console.error('Error submitting quote:', error);
@@ -83,7 +81,7 @@ const QuoteForm: React.FC = () => {
       <Paper elevation={3} sx={{ p: 4 }}>
         <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            
+
             {/* Product Type Section */}
             <Box>
               <Typography variant="h6" gutterBottom>
@@ -113,18 +111,18 @@ const QuoteForm: React.FC = () => {
             {/* Insurance Purchaser Section */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ 
-                  width: 12, 
-                  height: 12, 
-                  borderRadius: '50%', 
-                  backgroundColor: '#4caf50', 
-                  mr: 1 
+                <Box sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  backgroundColor: '#4caf50',
+                  mr: 1
                 }} />
                 <Typography variant="h6">
                   Bên mua bảo hiểm
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 150px' }}>
                   <FormControl fullWidth>
@@ -144,11 +142,11 @@ const QuoteForm: React.FC = () => {
                     />
                   </FormControl>
                 </Box>
-                  <Box sx={{ flex: '1 1 150px' }}>
+                <Box sx={{ flex: '1 1 150px' }}>
                   <Controller
                     name="purchaserAge"
                     control={control}
-                    defaultValue=""                    rules={{ 
+                    defaultValue="" rules={{
                       required: 'Vui lòng nhập tuổi',
                       validate: value => {
                         const num = Number(value);
@@ -171,7 +169,7 @@ const QuoteForm: React.FC = () => {
                     )}
                   />
                 </Box>
-                
+
                 <Box sx={{ flex: '1 1 200px' }}>
                   <FormControl fullWidth>
                     <InputLabel>Loại nghề nghiệp</InputLabel>
@@ -195,14 +193,14 @@ const QuoteForm: React.FC = () => {
                   </FormControl>
                 </Box>
               </Box>
-                <FormControlLabel
+              <FormControlLabel
                 control={
                   <Controller
                     name="sameAsInsured"
                     control={control}
                     defaultValue={false}
                     render={({ field: { onChange, value, ...field } }) => (
-                      <Checkbox 
+                      <Checkbox
                         {...field}
                         checked={value}
                         onChange={(e) => onChange(e.target.checked)}
@@ -221,18 +219,18 @@ const QuoteForm: React.FC = () => {
             {/* Insured Person Section */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ 
-                  width: 12, 
-                  height: 12, 
-                  borderRadius: '50%', 
-                  backgroundColor: '#4caf50', 
-                  mr: 1 
+                <Box sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  backgroundColor: '#4caf50',
+                  mr: 1
                 }} />
                 <Typography variant="h6">
                   Bên được bảo hiểm
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 150px' }}>
                   <FormControl fullWidth disabled={sameAsInsured}>
@@ -252,34 +250,34 @@ const QuoteForm: React.FC = () => {
                     />
                   </FormControl>
                 </Box>
-                
+
                 <Box sx={{ flex: '1 1 150px' }}>                  <Controller
-                    name="insuredAge"
-                    control={control}
-                    defaultValue=""                    rules={!sameAsInsured ? { 
-                      required: 'Vui lòng nhập tuổi',
-                      validate: value => {
-                        const num = Number(value);
-                        if (isNaN(num) || num < 0) {
-                          return 'Tuổi không hợp lệ';
-                        }
-                        return true;
+                  name="insuredAge"
+                  control={control}
+                  defaultValue="" rules={!sameAsInsured ? {
+                    required: 'Vui lòng nhập tuổi',
+                    validate: value => {
+                      const num = Number(value);
+                      if (isNaN(num) || num < 0) {
+                        return 'Tuổi không hợp lệ';
                       }
-                    } : {}}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        fullWidth
-                        label="Tuổi"
-                        type="number"
-                        placeholder="Nhập"
-                        disabled={sameAsInsured}                        error={!sameAsInsured && !!errors.insuredAge}
-                        helperText={!sameAsInsured ? errors.insuredAge?.message : ''}
-                      />
-                    )}
-                  />
+                      return true;
+                    }
+                  } : {}}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="Tuổi"
+                      type="number"
+                      placeholder="Nhập"
+                      disabled={sameAsInsured} error={!sameAsInsured && !!errors.insuredAge}
+                      helperText={!sameAsInsured ? errors.insuredAge?.message : ''}
+                    />
+                  )}
+                />
                 </Box>
-                
+
                 <Box sx={{ flex: '1 1 200px' }}>
                   <FormControl fullWidth disabled={sameAsInsured}>
                     <InputLabel>Loại nghề nghiệp</InputLabel>
@@ -310,18 +308,18 @@ const QuoteForm: React.FC = () => {
             {/* Payment Years Section */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ 
-                  width: 12, 
-                  height: 12, 
-                  borderRadius: '50%', 
-                  backgroundColor: '#4caf50', 
-                  mr: 1 
+                <Box sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  backgroundColor: '#4caf50',
+                  mr: 1
                 }} />
                 <Typography variant="h6">
                   Số năm đóng
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 200px' }}>
                   <Controller
@@ -342,7 +340,7 @@ const QuoteForm: React.FC = () => {
                     )}
                   />
                 </Box>
-                
+
                 <Box sx={{ flex: '1 1 200px' }}>
                   <Controller
                     name="yearlyPremium"
@@ -362,7 +360,7 @@ const QuoteForm: React.FC = () => {
                     )}
                   />
                 </Box>
-                
+
                 <Box sx={{ flex: '1 1 200px' }}>
                   <Controller
                     name="insuranceAmount"
@@ -394,7 +392,7 @@ const QuoteForm: React.FC = () => {
                 type="submit"
                 variant="contained"
                 size="large"
-                sx={{ 
+                sx={{
                   backgroundColor: '#4caf50',
                   '&:hover': { backgroundColor: '#45a049' },
                   px: 4,
