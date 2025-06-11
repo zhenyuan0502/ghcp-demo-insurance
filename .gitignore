@@ -72,6 +72,9 @@ wheels/
 *.sqlite
 *.sqlite3
 
+# Exception: Include the main insurance database
+!backend/instance/insurance.db
+
 # Backup files
 *.bak
 *.backup
