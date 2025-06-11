@@ -117,3 +117,6 @@ temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Exception: Include .env file for demo purposes
+!.env

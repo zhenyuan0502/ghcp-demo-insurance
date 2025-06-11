@@ -137,6 +137,9 @@ dmypy.json
 # Exception: Include the main insurance database
 !instance/insurance.db
 
+# Exception: Include .env file for demo purposes
+!.env
+
 # Config files with sensitive data
 config.py
 config_local.py
