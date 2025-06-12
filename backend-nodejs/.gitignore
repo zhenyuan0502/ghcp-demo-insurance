@@ -6,3 +6,6 @@ yarn-error.log*
 instance/
 *.db
 .DS_Store
+
+# Ignore instance-specific files
+!instance/insurance.db

@@ -1,12 +1,12 @@
 services:
-  backend-nodejs:
+  backend-py:
     build:
-      context: ./backend-nodejs
+      context: ./backend-py
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
     environment:
-      - NODE_ENV=production
+      - FLASK_ENV=production
       - DATABASE_URL=sqlite:///instance/insurance.db
     volumes:
       - backend_data:/app/instance
@@ -27,7 +27,7 @@ services:
     environment:
       - REACT_APP_API_URL=http://localhost:5000
     depends_on:
-      - backend-nodejs
+      - backend-py
     networks:
       - insurance-network
     healthcheck:

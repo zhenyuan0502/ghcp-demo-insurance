@@ -93,11 +93,11 @@ function calculatePremium(insuranceType, coverageAmount, age) {
     'home': 0.003,
     'health': 0.008
   };
-  
+
   const coverage = parseInt(coverageAmount);
   const ageInt = parseInt(age);
   const baseRate = baseRates[insuranceType] || 0.005;
-  
+
   // Age factor
   let ageFactor;
   if (ageInt < 25) {
@@ -109,7 +109,7 @@ function calculatePremium(insuranceType, coverageAmount, age) {
   } else {
     ageFactor = 1.3;
   }
-  
+
   const premium = coverage * baseRate * ageFactor / 12; // Monthly premium
   return Math.round(premium * 100) / 100; // Round to 2 decimal places
 }
@@ -119,14 +119,14 @@ function calculatePremium(insuranceType, coverageAmount, age) {
 app.post('/api/quote', async (req, res) => {
   try {
     const data = req.body;
-    
+
     // Calculate premium
     const premium = calculatePremium(
       data.insuranceType,
       data.coverageAmount,
       data.age
     );
-    
+
     const quote = await Quote.create({
       firstName: data.firstName,
       lastName: data.lastName,
@@ -139,7 +139,7 @@ app.post('/api/quote', async (req, res) => {
       age: data.age,
       premium: premium
     });
-    
+
     res.status(201).json({
       message: 'Quote created successfully',
       quote: {
@@ -169,7 +169,7 @@ app.get('/api/quotes', async (req, res) => {
     const quotes = await Quote.findAll({
       order: [['createdAt', 'DESC']]
     });
-    
+
     const quotesData = quotes.map(quote => ({
       id: quote.id,
       firstName: quote.firstName,
@@ -185,7 +185,7 @@ app.get('/api/quotes', async (req, res) => {
       status: quote.status,
       createdAt: quote.createdAt.toISOString()
     }));
-    
+
     res.json(quotesData);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -196,11 +196,11 @@ app.get('/api/quotes', async (req, res) => {
 app.get('/api/quote/:id', async (req, res) => {
   try {
     const quote = await Quote.findByPk(req.params.id);
-    
+
     if (!quote) {
       return res.status(404).json({ error: 'Quote not found' });
     }
-    
+
     res.json({
       id: quote.id,
       firstName: quote.firstName,
@@ -225,14 +225,14 @@ app.get('/api/quote/:id', async (req, res) => {
 app.put('/api/quote/:id/status', async (req, res) => {
   try {
     const quote = await Quote.findByPk(req.params.id);
-    
+
     if (!quote) {
       return res.status(404).json({ error: 'Quote not found' });
     }
-    
+
     quote.status = req.body.status;
     await quote.save();
-    
+
     res.json({
       id: quote.id,
       firstName: quote.firstName,
@@ -256,14 +256,14 @@ app.put('/api/quote/:id/status', async (req, res) => {
 app.put('/api/quotes/:id/status', async (req, res) => {
   try {
     const quote = await Quote.findByPk(req.params.id);
-    
+
     if (!quote) {
       return res.status(404).json({ error: 'Quote not found' });
     }
-    
+
     quote.status = req.body.status;
     await quote.save();
-    
+
     res.json({
       id: quote.id,
       firstName: quote.firstName,
@@ -284,6 +284,23 @@ app.put('/api/quotes/:id/status', async (req, res) => {
   }
 });
 
+// Delete quote
+app.delete('/api/quotes/:id', async (req, res) => {
+  try {
+    const quote = await Quote.findByPk(req.params.id);
+
+    if (!quote) {
+      return res.status(404).json({ error: 'Quote not found' });
+    }
+
+    await quote.destroy();
+
+    res.json({ message: 'Quote deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
@@ -298,11 +315,11 @@ async function startServer() {
     if (!fs.existsSync(instanceDir)) {
       fs.mkdirSync(instanceDir, { recursive: true });
     }
-    
+
     // Sync database
     await sequelize.sync();
     console.log('Database synced successfully');
-    
+
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });

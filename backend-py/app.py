@@ -142,6 +142,17 @@ def update_quote_status(quote_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
+@app.route('/api/quotes/<int:quote_id>', methods=['DELETE'])
+def delete_quote(quote_id):
+    try:
+        quote = Quote.query.get_or_404(quote_id)
+        db.session.delete(quote)
+        db.session.commit()
+        return jsonify({'message': 'Quote deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'healthy'})
