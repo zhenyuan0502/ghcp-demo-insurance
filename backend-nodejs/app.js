@@ -328,4 +328,10 @@ async function startServer() {
   }
 }
 
-startServer();
+// Export for testing
+module.exports = { app, calculatePremium, sequelize, Quote };
+
+// Start server only if this file is run directly
+if (require.main === module) {
+  startServer();
+}
