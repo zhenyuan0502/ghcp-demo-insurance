@@ -20,6 +20,20 @@ import { useForm, Controller } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// Helper to format number with thousand separators for display
+function formatNumberWithThousandSeparators(value: number | string) {
+  if (value === null || value === undefined || value === '') return '';
+  const num = typeof value === 'string' ? Number(value.replace(/,/g, '')) : value;
+  if (isNaN(num)) return '';
+  return num.toLocaleString('en-US');
+}
+
+// Helper to parse formatted string back to number
+function parseNumberFromFormatted(value: string) {
+  if (!value) return 0;
+  return Number(value.replace(/,/g, ''));
+}
+
 // Occupation mapping
 const occupationMap: { [key: string]: string } = {
   'office': 'Văn phòng',
@@ -87,7 +101,32 @@ const QuoteForm: React.FC = () => {
   };
 
   const onSubmit = async (data: QuoteFormData) => {
-    try {      // Convert the Vietnamese form data to the backend format
+    // Validate required fields manually (in case react-hook-form validation is bypassed)
+    // Check for missing required fields and show specific message
+    if (!data.productType || data.productType === '') {
+      showSnackbar('Vui lòng chọn loại sản phẩm.', 'error');
+      return;
+    }
+    const requiredFields = [
+      data.purchaserGender,
+      data.purchaserAge,
+      data.purchaserOccupation,
+      data.insuredGender,
+      data.insuredAge,
+      data.insuredOccupation,
+      data.monthlyPremium,
+      data.yearlyPremium,
+      data.insuranceAmount
+    ];
+    const hasEmpty = requiredFields.some(
+      v => v === undefined || v === null || v === '' || (typeof v === 'number' && isNaN(v))
+    );
+    if (hasEmpty) {
+      showSnackbar('Vui lòng điền đầy đủ tất cả các trường bắt buộc.', 'error');
+      return;
+    }
+    try {
+      // Convert the Vietnamese form data to the backend format
       const purchaserFullName = `Khách hàng ${data.purchaserGender === 'male' ? 'Nam' : 'Nữ'} - Tuổi ${data.purchaserAge} - Nghề nghiệp ${getOccupationName(data.purchaserOccupation)}`;
       const insuredFullName = data.sameAsInsured
         ? purchaserFullName
@@ -122,23 +161,28 @@ const QuoteForm: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Loại sản phẩm
               </Typography>
-              <FormControl fullWidth>
-                <InputLabel>Chọn</InputLabel>
-                <Controller
-                  name="productType"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: 'Vui lòng chọn loại sản phẩm' }}
-                  render={({ field }) => (
-                    <Select {...field} label="Chọn">
-                      <MenuItem value="life">Bảo hiểm nhân thọ</MenuItem>
-                      <MenuItem value="health">Bảo hiểm sức khỏe</MenuItem>
-                      <MenuItem value="accident">Bảo hiểm tai nạn</MenuItem>
-                      <MenuItem value="travel">Bảo hiểm du lịch</MenuItem>
-                    </Select>
-                  )}
-                />
-              </FormControl>
+              <Controller
+                name="productType"
+                control={control}
+                defaultValue=""
+                rules={{ required: 'Vui lòng chọn loại sản phẩm' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    fullWidth
+                    label="Chọn"
+                    error={!!errors.productType}
+                    helperText={errors.productType?.message}
+                  >
+                    <MenuItem value="">Chọn</MenuItem>
+                    <MenuItem value="life">Bảo hiểm nhân thọ</MenuItem>
+                    <MenuItem value="health">Bảo hiểm sức khỏe</MenuItem>
+                    <MenuItem value="accident">Bảo hiểm tai nạn</MenuItem>
+                    <MenuItem value="travel">Bảo hiểm du lịch</MenuItem>
+                  </TextField>
+                )}
+              />
             </Box>
 
             <Divider />
@@ -160,22 +204,26 @@ const QuoteForm: React.FC = () => {
 
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 150px' }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Giới tính</InputLabel>
-                    <Controller
-                      name="purchaserGender"
-                      control={control}
-                      defaultValue=""
-                      rules={{ required: 'Vui lòng chọn giới tính' }}
-                      render={({ field }) => (
-                        <Select {...field} label="Giới tính">
-                          <MenuItem value="">Chọn</MenuItem>
-                          <MenuItem value="male">Nam</MenuItem>
-                          <MenuItem value="female">Nữ</MenuItem>
-                        </Select>
-                      )}
-                    />
-                  </FormControl>
+                  <Controller
+                    name="purchaserGender"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Vui lòng chọn giới tính' }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        fullWidth
+                        label="Giới tính"
+                        error={!!errors.purchaserGender}
+                        helperText={errors.purchaserGender?.message}
+                      >
+                        <MenuItem value="">Chọn</MenuItem>
+                        <MenuItem value="male">Nam</MenuItem>
+                        <MenuItem value="female">Nữ</MenuItem>
+                      </TextField>
+                    )}
+                  />
                 </Box>
                 <Box sx={{ flex: '1 1 150px' }}>
                   <Controller
@@ -200,28 +248,45 @@ const QuoteForm: React.FC = () => {
                         placeholder="Nhập"
                         error={!!errors.purchaserAge}
                         helperText={errors.purchaserAge?.message}
+                        InputProps={{
+                          inputProps: { inputMode: 'numeric', pattern: '[0-9]*' },
+                        }}
+                        sx={{
+                          '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                            WebkitAppearance: 'none',
+                            margin: 0,
+                          },
+                          '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                          },
+                        }}
                       />
                     )}
                   />
                 </Box>
 
                 <Box sx={{ flex: '1 1 200px' }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Loại nghề nghiệp</InputLabel>                    <Controller
-                      name="purchaserOccupation"
-                      control={control}
-                      defaultValue=""
-                      rules={{ required: 'Vui lòng chọn nghề nghiệp' }}
-                      render={({ field }) => (
-                        <Select {...field} label="Loại nghề nghiệp">
-                          <MenuItem value="">Chọn</MenuItem>
-                          {Object.entries(occupationMap).map(([value, label]) => (
-                            <MenuItem key={value} value={value}>{label}</MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                    />
-                  </FormControl>
+                  <Controller
+                    name="purchaserOccupation"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Vui lòng chọn nghề nghiệp' }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        fullWidth
+                        label="Loại nghề nghiệp"
+                        error={!!errors.purchaserOccupation}
+                        helperText={errors.purchaserOccupation?.message}
+                      >
+                        <MenuItem value="">Chọn</MenuItem>
+                        {Object.entries(occupationMap).map(([value, label]) => (
+                          <MenuItem key={value} value={value}>{label}</MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
                 </Box>
               </Box>
               <FormControlLabel
@@ -264,22 +329,27 @@ const QuoteForm: React.FC = () => {
 
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 150px' }}>
-                  <FormControl fullWidth disabled={sameAsInsured}>
-                    <InputLabel>Giới tính</InputLabel>
-                    <Controller
-                      name="insuredGender"
-                      control={control}
-                      defaultValue=""
-                      rules={!sameAsInsured ? { required: 'Vui lòng chọn giới tính' } : {}}
-                      render={({ field }) => (
-                        <Select {...field} label="Giới tính">
-                          <MenuItem value="">Chọn</MenuItem>
-                          <MenuItem value="male">Nam</MenuItem>
-                          <MenuItem value="female">Nữ</MenuItem>
-                        </Select>
-                      )}
-                    />
-                  </FormControl>
+                  <Controller
+                    name="insuredGender"
+                    control={control}
+                    defaultValue=""
+                    rules={!sameAsInsured ? { required: 'Vui lòng chọn giới tính' } : {}}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        fullWidth
+                        label="Giới tính"
+                        error={!sameAsInsured && !!errors.insuredGender}
+                        helperText={!sameAsInsured ? errors.insuredGender?.message : ''}
+                        disabled={sameAsInsured}
+                      >
+                        <MenuItem value="">Chọn</MenuItem>
+                        <MenuItem value="male">Nam</MenuItem>
+                        <MenuItem value="female">Nữ</MenuItem>
+                      </TextField>
+                    )}
+                  />
                 </Box>
 
                 <Box sx={{ flex: '1 1 150px' }}>                  <Controller
@@ -304,28 +374,46 @@ const QuoteForm: React.FC = () => {
                       placeholder="Nhập"
                       disabled={sameAsInsured} error={!sameAsInsured && !!errors.insuredAge}
                       helperText={!sameAsInsured ? errors.insuredAge?.message : ''}
+                      InputProps={{
+                        inputProps: { inputMode: 'numeric', pattern: '[0-9]*' },
+                      }}
+                      sx={{
+                        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                          WebkitAppearance: 'none',
+                          margin: 0,
+                        },
+                        '& input[type=number]': {
+                          MozAppearance: 'textfield',
+                        },
+                      }}
                     />
                   )}
                 />
                 </Box>
 
                 <Box sx={{ flex: '1 1 200px' }}>
-                  <FormControl fullWidth disabled={sameAsInsured}>
-                    <InputLabel>Loại nghề nghiệp</InputLabel>                    <Controller
-                      name="insuredOccupation"
-                      control={control}
-                      defaultValue=""
-                      rules={!sameAsInsured ? { required: 'Vui lòng chọn nghề nghiệp' } : {}}
-                      render={({ field }) => (
-                        <Select {...field} label="Loại nghề nghiệp">
-                          <MenuItem value="">Chọn</MenuItem>
-                          {Object.entries(occupationMap).map(([value, label]) => (
-                            <MenuItem key={value} value={value}>{label}</MenuItem>
-                          ))}
-                        </Select>
-                      )}
-                    />
-                  </FormControl>
+                  <Controller
+                    name="insuredOccupation"
+                    control={control}
+                    defaultValue=""
+                    rules={!sameAsInsured ? { required: 'Vui lòng chọn nghề nghiệp' } : {}}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        fullWidth
+                        label="Loại nghề nghiệp"
+                        error={!sameAsInsured && !!errors.insuredOccupation}
+                        helperText={!sameAsInsured ? errors.insuredOccupation?.message : ''}
+                        disabled={sameAsInsured}
+                      >
+                        <MenuItem value="">Chọn</MenuItem>
+                        {Object.entries(occupationMap).map(([value, label]) => (
+                          <MenuItem key={value} value={value}>{label}</MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
                 </Box>
               </Box>
             </Box>
@@ -353,16 +441,30 @@ const QuoteForm: React.FC = () => {
                     name="monthlyPremium"
                     control={control}
                     defaultValue={0}
-                    render={({ field }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <TextField
-                        {...field}
+                        {...rest}
+                        value={formatNumberWithThousandSeparators(value)}
+                        onChange={e => {
+                          const raw = parseNumberFromFormatted(e.target.value);
+                          onChange(raw);
+                        }}
                         fullWidth
                         label="Số phí dự kiến/ tháng"
-                        type="number"
                         InputProps={{
-                          endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>
+                          endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>,
+                          inputProps: { inputMode: 'numeric', pattern: '[0-9,]*' },
                         }}
                         placeholder="00.000"
+                        sx={{
+                          '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                            WebkitAppearance: 'none',
+                            margin: 0,
+                          },
+                          '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                          },
+                        }}
                       />
                     )}
                   />
@@ -373,16 +475,30 @@ const QuoteForm: React.FC = () => {
                     name="yearlyPremium"
                     control={control}
                     defaultValue={0}
-                    render={({ field }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <TextField
-                        {...field}
+                        {...rest}
+                        value={formatNumberWithThousandSeparators(value)}
+                        onChange={e => {
+                          const raw = parseNumberFromFormatted(e.target.value);
+                          onChange(raw);
+                        }}
                         fullWidth
                         label="Số phí chính xác/ tháng"
-                        type="number"
                         InputProps={{
-                          endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>
+                          endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>,
+                          inputProps: { inputMode: 'numeric', pattern: '[0-9,]*' },
                         }}
                         placeholder="00.000"
+                        sx={{
+                          '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                            WebkitAppearance: 'none',
+                            margin: 0,
+                          },
+                          '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                          },
+                        }}
                       />
                     )}
                   />
@@ -394,18 +510,32 @@ const QuoteForm: React.FC = () => {
                     control={control}
                     defaultValue={0}
                     rules={{ required: 'Vui lòng nhập số tiền bảo hiểm' }}
-                    render={({ field }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <TextField
-                        {...field}
+                        {...rest}
+                        value={formatNumberWithThousandSeparators(value)}
+                        onChange={e => {
+                          const raw = parseNumberFromFormatted(e.target.value);
+                          onChange(raw);
+                        }}
                         fullWidth
                         label="Số tiền bảo hiểm"
-                        type="number"
                         InputProps={{
-                          endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>
+                          endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>,
+                          inputProps: { inputMode: 'numeric', pattern: '[0-9,]*' },
                         }}
                         placeholder="00.000"
                         error={!!errors.insuranceAmount}
                         helperText={errors.insuranceAmount?.message}
+                        sx={{
+                          '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                            WebkitAppearance: 'none',
+                            margin: 0,
+                          },
+                          '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                          },
+                        }}
                       />
                     )}
                   />

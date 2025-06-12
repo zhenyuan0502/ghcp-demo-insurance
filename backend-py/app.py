@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 app = Flask(__name__)
 
 # Database configuration based on DATABASE_TYPE
@@ -29,6 +30,9 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = sqlite_url
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Print out which database is being used
+print(f"[INFO] Using database: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
