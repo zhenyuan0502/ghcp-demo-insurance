@@ -20,6 +20,16 @@ import { useForm, Controller } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// Occupation mapping
+const occupationMap: { [key: string]: string } = {
+  'office': 'Văn phòng',
+  'teacher': 'Giáo viên',
+  'doctor': 'Bác sĩ',
+  'engineer': 'Kỹ sư',
+  'business': 'Kinh doanh',
+  'other': 'Khác'
+};
+
 interface QuoteFormData {
   productType: string;
   purchaserGender: string;
@@ -68,21 +78,22 @@ const QuoteForm: React.FC = () => {
       severity
     });
   };
-
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
+  };
+  // Function to convert occupation value to Vietnamese name
+  const getOccupationName = (occupationValue: string) => {
+    return occupationMap[occupationValue] || occupationValue;
   };
 
   const onSubmit = async (data: QuoteFormData) => {
     try {      // Convert the Vietnamese form data to the backend format
-      const purchaserFullName = `${data.purchaserGender === 'male' ? 'Anh' : 'Chị'} Khách hàng ${data.purchaserGender === 'male' ? 'Nam' : 'Nữ'}`;
+      const purchaserFullName = `Khách hàng ${data.purchaserGender === 'male' ? 'Nam' : 'Nữ'} - Tuổi ${data.purchaserAge} - Nghề nghiệp ${getOccupationName(data.purchaserOccupation)}`;
       const insuredFullName = data.sameAsInsured
         ? purchaserFullName
-        : `${data.insuredGender === 'male' ? 'Anh' : 'Chị'} Người được bảo hiểm ${data.insuredGender === 'male' ? 'Nam' : 'Nữ'}`;
+        : `Người được bảo hiểm ${data.insuredGender === 'male' ? 'Nam' : 'Nữ'} - Tuổi ${data.insuredAge} - Nghề nghiệp ${getOccupationName(data.insuredOccupation)}`;
 
       const backendData = {
-        firstName: 'Khách hàng',
-        lastName: data.purchaserGender === 'male' ? 'Nam' : 'Nữ',
         purchaserName: purchaserFullName,
         insuredName: insuredFullName,
         email: 'customer@example.com',
@@ -91,7 +102,7 @@ const QuoteForm: React.FC = () => {
         coverageAmount: data.insuranceAmount.toString(),
         age: Number(data.purchaserAge) // Ensure age is converted to number
       };
-      const response = await axios.post('http://localhost:5000/api/quote', backendData);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/quote`, backendData);
       console.log('Quote submitted:', response.data);
       showSnackbar('Báo giá đã được gửi thành công!', 'success');
     } catch (error) {
@@ -196,8 +207,7 @@ const QuoteForm: React.FC = () => {
 
                 <Box sx={{ flex: '1 1 200px' }}>
                   <FormControl fullWidth>
-                    <InputLabel>Loại nghề nghiệp</InputLabel>
-                    <Controller
+                    <InputLabel>Loại nghề nghiệp</InputLabel>                    <Controller
                       name="purchaserOccupation"
                       control={control}
                       defaultValue=""
@@ -205,12 +215,9 @@ const QuoteForm: React.FC = () => {
                       render={({ field }) => (
                         <Select {...field} label="Loại nghề nghiệp">
                           <MenuItem value="">Chọn</MenuItem>
-                          <MenuItem value="office">Văn phòng</MenuItem>
-                          <MenuItem value="teacher">Giáo viên</MenuItem>
-                          <MenuItem value="doctor">Bác sĩ</MenuItem>
-                          <MenuItem value="engineer">Kỹ sư</MenuItem>
-                          <MenuItem value="business">Kinh doanh</MenuItem>
-                          <MenuItem value="other">Khác</MenuItem>
+                          {Object.entries(occupationMap).map(([value, label]) => (
+                            <MenuItem key={value} value={value}>{label}</MenuItem>
+                          ))}
                         </Select>
                       )}
                     />
@@ -304,8 +311,7 @@ const QuoteForm: React.FC = () => {
 
                 <Box sx={{ flex: '1 1 200px' }}>
                   <FormControl fullWidth disabled={sameAsInsured}>
-                    <InputLabel>Loại nghề nghiệp</InputLabel>
-                    <Controller
+                    <InputLabel>Loại nghề nghiệp</InputLabel>                    <Controller
                       name="insuredOccupation"
                       control={control}
                       defaultValue=""
@@ -313,12 +319,9 @@ const QuoteForm: React.FC = () => {
                       render={({ field }) => (
                         <Select {...field} label="Loại nghề nghiệp">
                           <MenuItem value="">Chọn</MenuItem>
-                          <MenuItem value="office">Văn phòng</MenuItem>
-                          <MenuItem value="teacher">Giáo viên</MenuItem>
-                          <MenuItem value="doctor">Bác sĩ</MenuItem>
-                          <MenuItem value="engineer">Kỹ sư</MenuItem>
-                          <MenuItem value="business">Kinh doanh</MenuItem>
-                          <MenuItem value="other">Khác</MenuItem>
+                          {Object.entries(occupationMap).map(([value, label]) => (
+                            <MenuItem key={value} value={value}>{label}</MenuItem>
+                          ))}
                         </Select>
                       )}
                     />

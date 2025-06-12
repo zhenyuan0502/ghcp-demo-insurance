@@ -1,24 +1,4 @@
 services:
-  postgres:
-    build:
-      context: ./database-postgres
-      dockerfile: Dockerfile
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=insurance_db
-      - POSTGRES_USER=insurance_user
-      - POSTGRES_PASSWORD=insurance_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - insurance-network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U insurance_user -d insurance_db" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   backend-py:
     build:
       context: ./backend-py
@@ -27,17 +7,10 @@ services:
       - "5000:5000"
     environment:
       - FLASK_ENV=production
-      - DATABASE_TYPE=postgresql
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=insurance_db
-      - POSTGRES_USER=insurance_user
-      - POSTGRES_PASSWORD=insurance_password
+      - DATABASE_TYPE=sqlite
+      - SQLITE_DATABASE_URL=sqlite:///instance/insurance.db
     volumes:
       - backend_data:/app/instance
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - insurance-network
     healthcheck:
@@ -66,8 +39,6 @@ services:
 
 volumes:
   backend_data:
-    driver: local
-  postgres_data:
     driver: local
 
 networks:

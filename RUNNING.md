@@ -9,6 +9,21 @@ Before running the application, make sure you have the following installed:
 - **Python 3.8+** - For the Flask backend
 - **Node.js 16+** - For the React frontend  
 - **npm** - Usually comes with Node.js
+- **Docker** (Optional) - For PostgreSQL database
+
+## Database Options
+
+The application supports two database backends:
+
+### SQLite (Default)
+- No additional setup required
+- Database file created automatically
+- Perfect for development and testing
+
+### PostgreSQL
+- Requires PostgreSQL server
+- Can be run via Docker or local installation
+- See [DATABASE_CONFIG.md](DATABASE_CONFIG.md) for detailed setup
 
 ## Quick Start
 
@@ -139,3 +154,30 @@ The application uses SQLite with the database file located at:
 - `backend/instance/insurance.db`
 
 The database is automatically created when you first run the application.
+
+## Docker Compose
+
+For a production-like environment, you can use Docker Compose to run the application with PostgreSQL:
+
+1. **Start PostgreSQL**:
+   ```bash
+   docker-compose up postgres -d
+   ```
+2. **Update Environment Variables**:
+   - For Python backend: Update `backend-py/.env` to set `DATABASE_TYPE=postgresql`
+   - For Node.js backend: Update `backend-nodejs/.env` to set `DATABASE_TYPE=postgresql`
+3. **Run the Application**:
+   ```bash
+   # For Python backend
+   docker-compose -f docker-compose.python.yml up
+
+   # For Node.js backend
+   docker-compose up
+   ```
+
+For development, you can still use SQLite with Docker Compose:
+
+```bash
+# Python backend with SQLite
+docker-compose -f docker-compose.python.sqlite.yml up
+````

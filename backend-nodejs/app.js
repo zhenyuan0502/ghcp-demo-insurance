@@ -7,12 +7,36 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Database configuration based on DATABASE_TYPE
+let sequelizeConfig;
+const dbType = process.env.DATABASE_TYPE || 'sqlite';
+
+if (dbType === 'postgresql') {
+  // PostgreSQL configuration
+  const dbUrl = `postgresql://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`;
+  sequelizeConfig = {
+    dialect: 'postgres',
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    database: process.env.POSTGRES_DB,
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    logging: false,
+    dialectOptions: {
+      ssl: false
+    }
+  };
+} else {
+  // SQLite configuration (default)
+  sequelizeConfig = {
+    dialect: 'sqlite',
+    storage: process.env.SQLITE_DATABASE_URL?.replace('sqlite:///', '') || path.join(__dirname, 'instance', 'insurance.db'),
+    logging: false
+  };
+}
+
 // Database setup
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: process.env.DATABASE_URL || path.join(__dirname, 'instance', 'insurance.db'),
-  logging: false
-});
+const sequelize = new Sequelize(sequelizeConfig);
 
 // Middleware
 app.use(cors());
@@ -24,16 +48,6 @@ const Quote = sequelize.define('Quote', {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
-  },
-  firstName: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    field: 'first_name'
-  },
-  lastName: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    field: 'last_name'
   },
   purchaserName: {
     type: DataTypes.STRING(100),
@@ -66,9 +80,8 @@ const Quote = sequelize.define('Quote', {
   age: {
     type: DataTypes.INTEGER,
     allowNull: false
-  },
-  premium: {
-    type: DataTypes.FLOAT,
+  }, premium: {
+    type: DataTypes.BIGINT, // Changed to BIGINT for VND (no decimals)
     allowNull: true
   },
   status: {
@@ -85,33 +98,35 @@ const Quote = sequelize.define('Quote', {
   timestamps: false
 });
 
-// Premium calculation logic (same as Python backend)
+// Premium calculation logic for VND currency
 function calculatePremium(insuranceType, coverageAmount, age) {
+  // Base rates for VND (monthly premium as percentage of coverage)
   const baseRates = {
-    'life': 0.005,
-    'auto': 0.015,
-    'home': 0.003,
-    'health': 0.008
+    'life': 0.0042,      // 0.42% monthly for life insurance
+    'auto': 0.0125,      // 1.25% monthly for auto insurance
+    'home': 0.0028,      // 0.28% monthly for home insurance
+    'health': 0.0068     // 0.68% monthly for health insurance
   };
 
   const coverage = parseInt(coverageAmount);
   const ageInt = parseInt(age);
-  const baseRate = baseRates[insuranceType] || 0.005;
+  const baseRate = baseRates[insuranceType] || 0.0042;
 
-  // Age factor
+  // Age factor for Vietnamese market
   let ageFactor;
   if (ageInt < 25) {
-    ageFactor = 1.2;
+    ageFactor = 1.2;     // Young drivers/people higher risk
   } else if (ageInt < 35) {
-    ageFactor = 1.0;
+    ageFactor = 1.0;     // Prime age, standard rate
   } else if (ageInt < 50) {
-    ageFactor = 1.1;
+    ageFactor = 1.1;     // Middle age, slight increase
   } else {
-    ageFactor = 1.3;
+    ageFactor = 1.3;     // Senior, higher risk
   }
 
-  const premium = coverage * baseRate * ageFactor / 12; // Monthly premium
-  return Math.round(premium * 100) / 100; // Round to 2 decimal places
+  // Calculate monthly premium in VND (round to nearest 1000 VND)
+  const premium = coverage * baseRate * ageFactor;
+  return Math.round(premium / 1000) * 1000; // Round to nearest 1000 VND
 }
 
 // Routes
@@ -125,11 +140,7 @@ app.post('/api/quote', async (req, res) => {
       data.insuranceType,
       data.coverageAmount,
       data.age
-    );
-
-    const quote = await Quote.create({
-      firstName: data.firstName,
-      lastName: data.lastName,
+    ); const quote = await Quote.create({
       purchaserName: data.purchaserName,
       insuredName: data.insuredName,
       email: data.email,
@@ -138,14 +149,10 @@ app.post('/api/quote', async (req, res) => {
       coverageAmount: data.coverageAmount,
       age: data.age,
       premium: premium
-    });
-
-    res.status(201).json({
+    }); res.status(201).json({
       message: 'Quote created successfully',
       quote: {
         id: quote.id,
-        firstName: quote.firstName,
-        lastName: quote.lastName,
         purchaserName: quote.purchaserName,
         insuredName: quote.insuredName,
         email: quote.email,
@@ -168,12 +175,8 @@ app.get('/api/quotes', async (req, res) => {
   try {
     const quotes = await Quote.findAll({
       order: [['createdAt', 'DESC']]
-    });
-
-    const quotesData = quotes.map(quote => ({
+    }); const quotesData = quotes.map(quote => ({
       id: quote.id,
-      firstName: quote.firstName,
-      lastName: quote.lastName,
       purchaserName: quote.purchaserName,
       insuredName: quote.insuredName,
       email: quote.email,
@@ -203,8 +206,6 @@ app.get('/api/quote/:id', async (req, res) => {
 
     res.json({
       id: quote.id,
-      firstName: quote.firstName,
-      lastName: quote.lastName,
       purchaserName: quote.purchaserName,
       insuredName: quote.insuredName,
       email: quote.email,
@@ -231,12 +232,8 @@ app.put('/api/quote/:id/status', async (req, res) => {
     }
 
     quote.status = req.body.status;
-    await quote.save();
-
-    res.json({
+    await quote.save(); res.json({
       id: quote.id,
-      firstName: quote.firstName,
-      lastName: quote.lastName,
       purchaserName: quote.purchaserName,
       insuredName: quote.insuredName,
       email: quote.email,
@@ -266,8 +263,6 @@ app.put('/api/quotes/:id/status', async (req, res) => {
 
     res.json({
       id: quote.id,
-      firstName: quote.firstName,
-      lastName: quote.lastName,
       purchaserName: quote.purchaserName,
       insuredName: quote.insuredName,
       email: quote.email,

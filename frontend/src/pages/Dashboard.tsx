@@ -30,13 +30,11 @@ import axios from 'axios';
 
 interface Quote {
   id: number;
-  firstName: string;
-  lastName: string;
   purchaserName?: string;
   insuredName?: string;
   insuranceType: string;
   coverageAmount: string;
-  premium: number;
+  premium: number | string;
   status: string;
   createdAt: string;
 }
@@ -56,10 +54,9 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchQuotes();
   }, []);
-
   const fetchQuotes = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/quotes');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/quotes`);
       setQuotes(response.data);
     } catch (error) {
       console.error('Error fetching quotes:', error);
@@ -85,7 +82,7 @@ const Dashboard: React.FC = () => {
     if (!selectedQuoteId) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/quotes/${selectedQuoteId}/status`, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/quotes/${selectedQuoteId}/status`, {
         status: status
       });
 
@@ -109,7 +106,7 @@ const Dashboard: React.FC = () => {
     if (!quoteToDelete) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/quotes/${quoteToDelete}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/quotes/${quoteToDelete}`);
 
       // Update the local state by removing the deleted quote
       setQuotes(quotes.filter(quote => quote.id !== quoteToDelete));
@@ -215,21 +212,19 @@ const Dashboard: React.FC = () => {
           </TableRow>
         </TableHead>          <TableBody>
           {quotes && quotes.length > 0 ? quotes.map((quote) => (
-            <TableRow key={quote.id}>
+            <TableRow key={quote.id}>              <TableCell>
+              {quote.purchaserName || 'Khách hàng'}
+            </TableCell>
               <TableCell>
-                {quote.purchaserName || `${quote.firstName} ${quote.lastName}`}
-              </TableCell>
-              <TableCell>
-                {quote.insuredName || `${quote.firstName} ${quote.lastName}`}
+                {quote.insuredName || 'Người được bảo hiểm'}
               </TableCell>
               <TableCell style={{ textTransform: 'capitalize' }}>
                 {quote.insuranceType}
               </TableCell><TableCell>
                 {parseInt(quote.coverageAmount).toLocaleString()} VND
-              </TableCell>
-              <TableCell>
-                {quote.premium?.toFixed(2) || 'N/A'} VND
-              </TableCell>                <TableCell>
+              </TableCell>              <TableCell>
+                {Number(quote.premium || 0).toLocaleString()} VND
+              </TableCell><TableCell>
 
                 <Chip
                   onClick={(e) => handleStatusClick(e, quote.id)}

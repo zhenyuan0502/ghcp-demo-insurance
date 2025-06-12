@@ -9,3 +9,4 @@ instance/
 
 # Ignore instance-specific files
 !instance/insurance.db
+!.env

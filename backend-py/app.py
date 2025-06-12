@@ -9,7 +9,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///insurance.db')
+
+# Database configuration based on DATABASE_TYPE
+db_type = os.getenv('DATABASE_TYPE', 'sqlite')
+
+if db_type == 'postgresql':
+    # PostgreSQL configuration
+    postgres_host = os.getenv('POSTGRES_HOST', 'localhost')
+    postgres_port = os.getenv('POSTGRES_PORT', '5432')
+    postgres_db = os.getenv('POSTGRES_DB', 'insurance_db')
+    postgres_user = os.getenv('POSTGRES_USER', 'insurance_user')
+    postgres_password = os.getenv('POSTGRES_PASSWORD', 'insurance_password')
+    
+    database_url = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}"
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # SQLite configuration (default)
+    sqlite_url = os.getenv('SQLITE_DATABASE_URL', 'sqlite:///insurance.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = sqlite_url
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -18,9 +36,9 @@ CORS(app)
 
 # Models
 class Quote(db.Model):
+    __tablename__ = 'quote'
+    
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
     purchaser_name = db.Column(db.String(100), nullable=True)
     insured_name = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(100), nullable=False)
@@ -28,15 +46,13 @@ class Quote(db.Model):
     insurance_type = db.Column(db.String(20), nullable=False)
     coverage_amount = db.Column(db.String(20), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    premium = db.Column(db.Float)
+    premium = db.Column(db.BigInteger)  # Changed to BigInteger for VND (no decimals)
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
         return {
             'id': self.id,
-            'firstName': self.first_name,
-            'lastName': self.last_name,
             'purchaserName': self.purchaser_name,
             'insuredName': self.insured_name,
             'email': self.email,
@@ -49,32 +65,34 @@ class Quote(db.Model):
             'createdAt': self.created_at.isoformat()
         }
 
-# Premium calculation logic
+# Premium calculation logic for VND currency
 def calculate_premium(insurance_type, coverage_amount, age):
+    # Base rates for VND (monthly premium as percentage of coverage)
     base_rates = {
-        'life': 0.005,
-        'auto': 0.015,
-        'home': 0.003,
-        'health': 0.008
+        'life': 0.0042,      # 0.42% monthly for life insurance
+        'auto': 0.0125,      # 1.25% monthly for auto insurance  
+        'home': 0.0028,      # 0.28% monthly for home insurance
+        'health': 0.0068     # 0.68% monthly for health insurance
     }
     
     # Ensure proper type conversion
     coverage = int(coverage_amount)
     age = int(age)  # Convert age to integer
-    base_rate = base_rates.get(insurance_type, 0.005)
+    base_rate = base_rates.get(insurance_type, 0.0042)
     
-    # Age factor
+    # Age factor for Vietnamese market
     if age < 25:
-        age_factor = 1.2
+        age_factor = 1.2     # Young drivers/people higher risk
     elif age < 35:
-        age_factor = 1.0
+        age_factor = 1.0     # Prime age, standard rate
     elif age < 50:
-        age_factor = 1.1
+        age_factor = 1.1     # Middle age, slight increase
     else:
-        age_factor = 1.3
+        age_factor = 1.3     # Senior, higher risk
     
-    premium = coverage * base_rate * age_factor / 12  # Monthly premium
-    return round(premium, 2)
+    # Calculate monthly premium in VND (round to nearest 1000 VND)
+    premium = coverage * base_rate * age_factor
+    return round(premium / 1000) * 1000  # Round to nearest 1000 VND
 
 # Routes
 @app.route('/api/quote', methods=['POST'])
@@ -89,8 +107,6 @@ def create_quote():
         )
         
         quote = Quote(
-            first_name=data['firstName'],
-            last_name=data['lastName'],
             purchaser_name=data.get('purchaserName'),
             insured_name=data.get('insuredName'),
             email=data['email'],
