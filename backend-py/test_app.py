@@ -51,8 +51,8 @@ def test_health_check(client):
 def test_create_quote(client):
     """Test creating a new quote."""
     quote_data = {
-        'firstName': 'John',
-        'lastName': 'Doe',
+        'purchaserName': 'John',
+        'insuredName': 'Doe',
         'email': 'john.doe@example.com',
         'phone': '123-456-7890',
         'insuranceType': 'life',
@@ -67,8 +67,8 @@ def test_create_quote(client):
     assert response.status_code == 201
     data = json.loads(response.data)
     assert data['message'] == 'Quote created successfully'
-    assert data['quote']['firstName'] == 'John'
-    assert data['quote']['lastName'] == 'Doe'
+    assert data['quote']['purchaserName'] == 'John'
+    assert data['quote']['insuredName'] == 'Doe'
     assert data['quote']['premium'] > 0
 
 def test_get_quotes_empty(client):
@@ -82,8 +82,8 @@ def test_get_quotes_with_data(client):
     """Test getting quotes after creating one."""
     # First create a quote
     quote_data = {
-        'firstName': 'Jane',
-        'lastName': 'Smith',
+        'purchaserName': 'Jane',
+        'insuredName': 'Smith',
         'email': 'jane.smith@example.com',
         'phone': '987-654-3210',
         'insuranceType': 'auto',
@@ -100,14 +100,14 @@ def test_get_quotes_with_data(client):
     assert response.status_code == 200
     data = json.loads(response.data)
     assert len(data) == 1
-    assert data[0]['firstName'] == 'Jane'
+    assert data[0]['purchaserName'] == 'Jane'
 
 def test_get_single_quote(client):
     """Test getting a single quote by ID."""
     # First create a quote
     quote_data = {
-        'firstName': 'Bob',
-        'lastName': 'Johnson',
+        'purchaserName': 'Bob',
+        'insuredName': 'Johnson',
         'email': 'bob.johnson@example.com',
         'phone': '555-123-4567',
         'insuranceType': 'health',
@@ -125,15 +125,15 @@ def test_get_single_quote(client):
     response = client.get(f'/api/quote/{quote_id}')
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert data['firstName'] == 'Bob'
+    assert data['purchaserName'] == 'Bob'
     assert data['id'] == quote_id
 
 def test_update_quote_status(client):
     """Test updating a quote's status."""
     # First create a quote
     quote_data = {
-        'firstName': 'Alice',
-        'lastName': 'Wilson',
+        'purchaserName': 'Alice',
+        'insuredName': 'Wilson',
         'email': 'alice.wilson@example.com',
         'phone': '777-888-9999',
         'insuranceType': 'home',
@@ -161,8 +161,8 @@ def test_delete_quote(client):
     """Test deleting a quote."""
     # First create a quote
     quote_data = {
-        'firstName': 'Charlie',
-        'lastName': 'Brown',
+        'purchaserName': 'Charlie',
+        'insuredName': 'Brown',
         'email': 'charlie.brown@example.com',
         'phone': '111-222-3333',
         'insuranceType': 'life',

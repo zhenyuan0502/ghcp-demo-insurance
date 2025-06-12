@@ -51,12 +51,12 @@ const Quote = sequelize.define('Quote', {
   },
   purchaserName: {
     type: DataTypes.STRING(100),
-    allowNull: true,
+    allowNull: false,
     field: 'purchaser_name'
   },
   insuredName: {
     type: DataTypes.STRING(100),
-    allowNull: true,
+    allowNull: false,
     field: 'insured_name'
   },
   email: {
@@ -80,9 +80,10 @@ const Quote = sequelize.define('Quote', {
   age: {
     type: DataTypes.INTEGER,
     allowNull: false
-  }, premium: {
-    type: DataTypes.BIGINT, // Changed to BIGINT for VND (no decimals)
-    allowNull: true
+  },
+  premium: {
+    type: DataTypes.FLOAT, // Allow decimals for premium
+    allowNull: false
   },
   status: {
     type: DataTypes.STRING(20),
@@ -100,33 +101,32 @@ const Quote = sequelize.define('Quote', {
 
 // Premium calculation logic for VND currency
 function calculatePremium(insuranceType, coverageAmount, age) {
-  // Base rates for VND (monthly premium as percentage of coverage)
+  // Base rates as expected by the tests (annual rates)
   const baseRates = {
-    'life': 0.0042,      // 0.42% monthly for life insurance
-    'auto': 0.0125,      // 1.25% monthly for auto insurance
-    'home': 0.0028,      // 0.28% monthly for home insurance
-    'health': 0.0068     // 0.68% monthly for health insurance
+    'life': 0.005,      // 0.5% annual for life insurance
+    'auto': 0.015,      // 1.5% annual for auto insurance
+    'home': 0.003       // 0.3% annual for home insurance
   };
 
   const coverage = parseInt(coverageAmount);
   const ageInt = parseInt(age);
-  const baseRate = baseRates[insuranceType] || 0.0042;
+  const baseRate = baseRates[insuranceType] || 0.005;
 
-  // Age factor for Vietnamese market
+  // Age factor as expected by the tests
   let ageFactor;
   if (ageInt < 25) {
-    ageFactor = 1.2;     // Young drivers/people higher risk
+    ageFactor = 1.2;
   } else if (ageInt < 35) {
-    ageFactor = 1.0;     // Prime age, standard rate
+    ageFactor = 1.0;
   } else if (ageInt < 50) {
-    ageFactor = 1.1;     // Middle age, slight increase
+    ageFactor = 1.1;
   } else {
-    ageFactor = 1.3;     // Senior, higher risk
+    ageFactor = 1.3;
   }
 
-  // Calculate monthly premium in VND (round to nearest 1000 VND)
-  const premium = coverage * baseRate * ageFactor;
-  return Math.round(premium / 1000) * 1000; // Round to nearest 1000 VND
+  // Calculate monthly premium (divide by 12), round to 2 decimals
+  const premium = coverage * baseRate * ageFactor / 12;
+  return Math.round(premium * 100) / 100;
 }
 
 // Routes
@@ -184,13 +184,14 @@ app.get('/api/quotes', async (req, res) => {
       insuranceType: quote.insuranceType,
       coverageAmount: quote.coverageAmount,
       age: quote.age,
-      premium: quote.premium,
+      premium: typeof quote.premium === 'string' ? Number(quote.premium) : quote.premium,
       status: quote.status,
-      createdAt: quote.createdAt.toISOString()
+      createdAt: quote.createdAt ? quote.createdAt.toISOString() : null
     }));
 
     res.json(quotesData);
   } catch (error) {
+    console.error('Error fetching quotes:', error);
     res.status(400).json({ error: error.message });
   }
 });

@@ -18,7 +18,8 @@ Push-Location backend-py
 if (-not (Test-Command "python")) {
     Write-Host "❌ Python is not installed or not in PATH" -ForegroundColor Red
     $testResults += "Backend-Python: SKIPPED (Python not found)"
-} else {
+}
+else {
     # Check if virtual environment exists, create if not
     if (-not (Test-Path "venv")) {
         Write-Host "Creating Python virtual environment..." -ForegroundColor Cyan
@@ -26,17 +27,16 @@ if (-not (Test-Command "python")) {
     }
 
     Write-Host "Activating virtual environment..." -ForegroundColor Cyan
-    & "./venv/Scripts/Activate.ps1"
-
-    Write-Host "Installing/updating dependencies..." -ForegroundColor Cyan
+    & "./venv/Scripts/Activate.ps1"    Write-Host "Installing/updating dependencies..." -ForegroundColor Cyan
     pip install -r requirements.txt
 
     Write-Host "Running Python tests..." -ForegroundColor Cyan
-    $pythonResult = pytest -v
+    $pythonResult = python -m pytest -v
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Python backend tests PASSED" -ForegroundColor Green
         $testResults += "Backend-Python: PASSED"
-    } else {
+    }
+    else {
         Write-Host "❌ Python backend tests FAILED" -ForegroundColor Red
         $testResults += "Backend-Python: FAILED"
     }
@@ -51,7 +51,8 @@ Push-Location backend-nodejs
 if (-not (Test-Command "npm")) {
     Write-Host "❌ Node.js/npm is not installed or not in PATH" -ForegroundColor Red
     $testResults += "Backend-NodeJS: SKIPPED (npm not found)"
-} else {
+}
+else {
     Write-Host "Installing/updating dependencies..." -ForegroundColor Cyan
     npm install
 
@@ -60,7 +61,8 @@ if (-not (Test-Command "npm")) {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Node.js backend tests PASSED" -ForegroundColor Green
         $testResults += "Backend-NodeJS: PASSED"
-    } else {
+    }
+    else {
         Write-Host "❌ Node.js backend tests FAILED" -ForegroundColor Red
         $testResults += "Backend-NodeJS: FAILED"
     }
@@ -75,7 +77,8 @@ Push-Location frontend
 if (-not (Test-Command "npm")) {
     Write-Host "❌ Node.js/npm is not installed or not in PATH" -ForegroundColor Red
     $testResults += "Frontend-React: SKIPPED (npm not found)"
-} else {
+}
+else {
     # Check if dependencies are installed
     if (-not (Test-Path "node_modules")) {
         Write-Host "Installing npm dependencies..." -ForegroundColor Cyan
@@ -87,7 +90,8 @@ if (-not (Test-Command "npm")) {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ React frontend tests PASSED" -ForegroundColor Green
         $testResults += "Frontend-React: PASSED"
-    } else {
+    }
+    else {
         Write-Host "❌ React frontend tests FAILED" -ForegroundColor Red
         $testResults += "Frontend-React: FAILED"
     }
@@ -101,9 +105,11 @@ Write-Host "========================" -ForegroundColor Magenta
 foreach ($result in $testResults) {
     if ($result -like "*PASSED*") {
         Write-Host $result -ForegroundColor Green
-    } elseif ($result -like "*FAILED*") {
+    }
+    elseif ($result -like "*FAILED*") {
         Write-Host $result -ForegroundColor Red
-    } else {
+    }
+    else {
         Write-Host $result -ForegroundColor Yellow
     }
 }
@@ -115,10 +121,12 @@ $skipped = $testResults | Where-Object { $_ -like "*SKIPPED*" }
 if ($failed.Count -eq 0 -and $skipped.Count -eq 0) {
     Write-Host "`n🎉 All tests PASSED!" -ForegroundColor Green
     exit 0
-} elseif ($failed.Count -eq 0) {
+}
+elseif ($failed.Count -eq 0) {
     Write-Host "`n⚠️ All available tests PASSED, but some were skipped due to missing dependencies" -ForegroundColor Yellow
     exit 0
-} else {
+}
+else {
     Write-Host "`n💥 Some tests FAILED!" -ForegroundColor Red
     exit 1
 }

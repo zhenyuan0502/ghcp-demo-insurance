@@ -51,11 +51,10 @@ describe('Insurance Backend API', () => {
 
       expect(response.body).toEqual({ status: 'healthy' });
     });
-
     test('POST /api/quote should create a new quote', async () => {
       const quoteData = {
-        firstName: 'John',
-        lastName: 'Doe',
+        purchaserName: 'John',
+        insuredName: 'Doe',
         email: 'john.doe@example.com',
         phone: '123-456-7890',
         insuranceType: 'life',
@@ -69,8 +68,8 @@ describe('Insurance Backend API', () => {
         .expect(201);
 
       expect(response.body.message).toBe('Quote created successfully');
-      expect(response.body.quote.firstName).toBe('John');
-      expect(response.body.quote.lastName).toBe('Doe');
+      expect(response.body.quote.purchaserName).toBe('John');
+      expect(response.body.quote.insuredName).toBe('Doe');
       expect(response.body.quote.premium).toBeGreaterThan(0);
     });
 
@@ -80,13 +79,11 @@ describe('Insurance Backend API', () => {
         .expect(200);
 
       expect(response.body).toEqual([]);
-    });
-
-    test('GET /api/quotes should return quotes after creation', async () => {
+    }); test('GET /api/quotes should return quotes after creation', async () => {
       // Create a quote first
       const quoteData = {
-        firstName: 'Jane',
-        lastName: 'Smith',
+        purchaserName: 'Jane',
+        insuredName: 'Smith',
         email: 'jane.smith@example.com',
         phone: '987-654-3210',
         insuranceType: 'auto',
@@ -104,14 +101,12 @@ describe('Insurance Backend API', () => {
         .expect(200);
 
       expect(response.body).toHaveLength(1);
-      expect(response.body[0].firstName).toBe('Jane');
-    });
-
-    test('GET /api/quote/:id should return specific quote', async () => {
+      expect(response.body[0].purchaserName).toBe('Jane');
+    }); test('GET /api/quote/:id should return specific quote', async () => {
       // Create a quote first
       const quoteData = {
-        firstName: 'Bob',
-        lastName: 'Johnson',
+        purchaserName: 'Bob',
+        insuredName: 'Johnson',
         email: 'bob.johnson@example.com',
         phone: '555-123-4567',
         insuranceType: 'health',
@@ -130,15 +125,13 @@ describe('Insurance Backend API', () => {
         .get(`/api/quote/${quoteId}`)
         .expect(200);
 
-      expect(response.body.firstName).toBe('Bob');
+      expect(response.body.purchaserName).toBe('Bob');
       expect(response.body.id).toBe(quoteId);
-    });
-
-    test('PUT /api/quote/:id/status should update quote status', async () => {
+    }); test('PUT /api/quote/:id/status should update quote status', async () => {
       // Create a quote first
       const quoteData = {
-        firstName: 'Alice',
-        lastName: 'Wilson',
+        purchaserName: 'Alice',
+        insuredName: 'Wilson',
         email: 'alice.wilson@example.com',
         phone: '777-888-9999',
         insuranceType: 'home',
@@ -160,13 +153,11 @@ describe('Insurance Backend API', () => {
         .expect(200);
 
       expect(response.body.status).toBe('approved');
-    });
-
-    test('DELETE /api/quotes/:id should delete quote', async () => {
+    }); test('DELETE /api/quotes/:id should delete quote', async () => {
       // Create a quote first
       const quoteData = {
-        firstName: 'Charlie',
-        lastName: 'Brown',
+        purchaserName: 'Charlie',
+        insuredName: 'Brown',
         email: 'charlie.brown@example.com',
         phone: '111-222-3333',
         insuranceType: 'life',
@@ -197,11 +188,9 @@ describe('Insurance Backend API', () => {
       await request(app)
         .get('/api/quote/999')
         .expect(404);
-    });
-
-    test('POST /api/quote should return 400 for invalid data', async () => {
+    }); test('POST /api/quote should return 400 for invalid data', async () => {
       const invalidData = {
-        firstName: 'John'
+        purchaserName: 'John'
         // Missing required fields
       };
 

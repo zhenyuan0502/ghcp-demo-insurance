@@ -53,10 +53,9 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchQuotes();
-  }, []);
-  const fetchQuotes = async () => {
+  }, []); const fetchQuotes = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/quotes`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/quotes`);
       setQuotes(response.data);
     } catch (error) {
       console.error('Error fetching quotes:', error);
@@ -79,10 +78,8 @@ const Dashboard: React.FC = () => {
 
   const updateQuoteStatus = async (status: string) => {
     console.log('updateQuoteStatus called with status:', status, 'for quote:', selectedQuoteId);
-    if (!selectedQuoteId) return;
-
-    try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/quotes/${selectedQuoteId}/status`, {
+    if (!selectedQuoteId) return; try {
+      await axios.put(`${import.meta.env.VITE_API_URL}/quotes/${selectedQuoteId}/status`, {
         status: status
       });
 
@@ -103,10 +100,8 @@ const Dashboard: React.FC = () => {
   };
 
   const confirmDeleteQuote = async () => {
-    if (!quoteToDelete) return;
-
-    try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/quotes/${quoteToDelete}`);
+    if (!quoteToDelete) return; try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/quotes/${quoteToDelete}`);
 
       // Update the local state by removing the deleted quote
       setQuotes(quotes.filter(quote => quote.id !== quoteToDelete));

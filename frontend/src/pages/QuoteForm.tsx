@@ -102,7 +102,7 @@ const QuoteForm: React.FC = () => {
         coverageAmount: data.insuranceAmount.toString(),
         age: Number(data.purchaserAge) // Ensure age is converted to number
       };
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/quote`, backendData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/quote`, backendData);
       console.log('Quote submitted:', response.data);
       showSnackbar('Báo giá đã được gửi thành công!', 'success');
     } catch (error) {
