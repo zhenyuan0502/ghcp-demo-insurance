@@ -26,12 +26,8 @@ else {
         python -m venv venv
     }
 
-    Write-Host "Activating virtual environment..." -ForegroundColor Cyan
-    & "./venv/Scripts/Activate.ps1"    Write-Host "Installing/updating dependencies..." -ForegroundColor Cyan
-    pip install -r requirements.txt
-
-    Write-Host "Running Python tests..." -ForegroundColor Cyan
-    $pythonResult = python -m pytest -v
+    Write-Host "Running backend-py/run_tests.ps1..." -ForegroundColor Cyan
+    $pythonResult = & ./run_tests.ps1
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Python backend tests PASSED" -ForegroundColor Green
         $testResults += "Backend-Python: PASSED"
@@ -57,7 +53,7 @@ else {
     npm install
 
     Write-Host "Running Node.js tests..." -ForegroundColor Cyan
-    $nodejsResult = npm test
+    $nodejsResult = npm test --run --verbose
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Node.js backend tests PASSED" -ForegroundColor Green
         $testResults += "Backend-NodeJS: PASSED"
@@ -86,7 +82,7 @@ else {
     }
 
     Write-Host "Running React tests..." -ForegroundColor Cyan
-    $reactResult = npm test -- --watchAll=false --passWithNoTests
+    $reactResult = npm test -- --verbose
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ React frontend tests PASSED" -ForegroundColor Green
         $testResults += "Frontend-React: PASSED"

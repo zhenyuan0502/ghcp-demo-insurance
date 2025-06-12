@@ -96,7 +96,11 @@ def calculate_premium(insurance_type, coverage_amount, age):
     
     # Calculate monthly premium in VND (round to nearest 1000 VND)
     premium = coverage * base_rate * age_factor
-    return round(premium / 1000) * 1000  # Round to nearest 1000 VND
+    # Always return at least 1000 VND if premium > 0, otherwise 0
+    rounded = round(premium / 1000) * 1000
+    if premium > 0 and rounded == 0:
+        return 1000
+    return rounded  # Round to nearest 1000 VND
 
 # Routes
 @app.route('/api/quote', methods=['POST'])

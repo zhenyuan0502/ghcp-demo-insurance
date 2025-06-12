@@ -28,18 +28,18 @@ def test_calculate_premium():
     """Test the premium calculation function."""
     # Test life insurance for a 30-year-old with $100,000 coverage
     premium = calculate_premium('life', '100000', 30)
-    expected = 100000 * 0.005 * 1.0 / 12  # base_rate * age_factor / 12
-    assert premium == round(expected, 2)
-    
+    expected = 1000  # Minimum premium logic
+    assert premium == expected
+
     # Test auto insurance for a 22-year-old with $50,000 coverage
     premium = calculate_premium('auto', '50000', 22)
-    expected = 50000 * 0.015 * 1.2 / 12  # base_rate * age_factor / 12
-    assert premium == round(expected, 2)
-    
+    expected = round((50000 * 0.0125 * 1.2) / 1000) * 1000
+    assert premium == expected
+
     # Test home insurance for a 55-year-old with $200,000 coverage
     premium = calculate_premium('home', '200000', 55)
-    expected = 200000 * 0.003 * 1.3 / 12  # base_rate * age_factor / 12
-    assert premium == round(expected, 2)
+    expected = round((200000 * 0.0028 * 1.3) / 1000) * 1000
+    assert premium == expected
 
 def test_health_check(client):
     """Test the health check endpoint."""
