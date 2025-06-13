@@ -1,6 +1,17 @@
 # ghcp-demo-insurance
 
+[![CI/CD Tests and Coverage](https://github.com/zhenyuan0502/ghcp-demo-insurance/actions/workflows/ci.yml/badge.svg)](https://github.com/zhenyuan0502/ghcp-demo-insurance/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/zhenyuan0502/ghcp-demo-insurance/branch/main/graph/badge.svg)](https://codecov.io/gh/zhenyuan0502/ghcp-demo-insurance)
+
 This project is a demo insurance application with a frontend and backend, designed for educational and demonstration purposes.
+
+## Test Coverage
+
+The project includes comprehensive test suites for all three services:
+
+- **Backend Python**: 89% statement coverage with 14 test cases
+- **Backend Node.js**: 70% statement coverage with 20 test cases  
+- **Frontend React**: 100% coverage for tested components with 27 test cases
 
 ## Project Structure
 
