@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme, PaletteMode } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import QuoteForm from './pages/QuoteForm';
 import Dashboard from './pages/Dashboard';
+import { LanguageContext, LanguageContextType } from './i18n/LanguageContext';
+import { Language, getTranslations } from './i18n/translations';
 import './App.css';
 
 // Theme Context
@@ -64,7 +66,14 @@ function App() {
     return (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme : 'light';
   };
 
+  // Get initial language from localStorage or default to 'vi'
+  const getInitialLanguage = (): Language => {
+    const savedLanguage = localStorage.getItem('language');
+    return (savedLanguage === 'vi' || savedLanguage === 'en') ? savedLanguage : 'vi';
+  };
+
   const [mode, setMode] = useState<PaletteMode>(getInitialTheme);
+  const [language, setLanguage] = useState<Language>(getInitialLanguage);
 
   const toggleTheme = () => {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
@@ -75,6 +84,11 @@ function App() {
     localStorage.setItem('theme-mode', mode);
   }, [mode]);
 
+  // Save language to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
   const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
   const themeContextValue = useMemo(() => ({
@@ -82,22 +96,30 @@ function App() {
     toggleTheme,
   }), [mode]);
 
+  const languageContextValue: LanguageContextType = useMemo(() => ({
+    language,
+    setLanguage,
+    t: getTranslations(language),
+  }), [language]);
+
   return (
-    <ThemeContext.Provider value={themeContextValue}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router>
-          <div className="App">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/quote" element={<QuoteForm />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-          </div>
-        </Router>
-      </ThemeProvider>
-    </ThemeContext.Provider>
+    <LanguageContext.Provider value={languageContextValue}>
+      <ThemeContext.Provider value={themeContextValue}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Router>
+            <div className="App">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/quote" element={<QuoteForm />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+              </Routes>
+            </div>
+          </Router>
+        </ThemeProvider>
+      </ThemeContext.Provider>
+    </LanguageContext.Provider>
   );
 }
 

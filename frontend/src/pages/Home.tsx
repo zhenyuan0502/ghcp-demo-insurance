@@ -1,26 +1,28 @@
-import React from 'react';
 import { Container, Typography, Button, Card, CardContent, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import HomeIcon from '@mui/icons-material/Home';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  
   const insuranceTypes = [
     {
-      title: 'Bảo Hiểm Nhân Thọ',
-      description: 'Bảo vệ tương lai tài chính của gia đình bạn',
+      title: t.home.lifeInsurance.title,
+      description: t.home.lifeInsurance.description,
       icon: <HealthAndSafetyIcon fontSize="large" color="primary" />
     },
     {
-      title: 'Bảo Hiểm Ô Tô',
-      description: 'Bảo hiểm toàn diện cho xe của bạn',
+      title: t.home.autoInsurance.title,
+      description: t.home.autoInsurance.description,
       icon: <DirectionsCarIcon fontSize="large" color="primary" />
     },
     {
-      title: 'Bảo Hiểm Nhà Ở',
-      description: 'Bảo vệ ngôi nhà và tài sản của bạn',
+      title: t.home.homeInsurance.title,
+      description: t.home.homeInsurance.description,
       icon: <HomeIcon fontSize="large" color="primary" />
     }
   ];
@@ -28,10 +30,10 @@ const Home: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>      <Box textAlign="center" mb={4}>
         <Typography variant="h2" component="h1" gutterBottom>
-          Chào Mừng Đến Với Bảo Hiểm An Toàn
+          {t.home.title}
         </Typography>
         <Typography variant="h5" color="text.secondary" paragraph>
-          Đối tác tin cậy cho các giải pháp bảo hiểm toàn diện
+          {t.home.subtitle}
         </Typography>
         <Button 
           variant="contained" 
@@ -39,7 +41,7 @@ const Home: React.FC = () => {
           onClick={() => navigate('/quote')}
           sx={{ mt: 2 }}
         >
-          Nhận Báo Giá Miễn Phí
+          {t.home.getQuoteButton}
         </Button>
       </Box><Box sx={{ display: 'flex', gap: 4, mt: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
         {insuranceTypes.map((type, index) => (
