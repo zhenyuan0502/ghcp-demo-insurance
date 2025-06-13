@@ -47,7 +47,7 @@ interface QuoteFormData {
 
 const QuoteForm: React.FC = () => {
   const { control, handleSubmit, watch, setValue, clearErrors, formState: { errors } } = useForm<QuoteFormData>();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const sameAsInsured = watch('sameAsInsured', false);
 
   // Snackbar state for notifications

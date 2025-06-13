@@ -47,8 +47,8 @@
     "age": "Tuổi",
     "occupation": "Nghề nghiệp",
     "paymentYears": "Số năm đóng",
-    "monthlyPremium": "Phí hàng tháng",
-    "yearlyPremium": "Phí hàng năm",
+    "monthlyPremium": "Số phí dự kiến/ tháng",
+    "yearlyPremium": "Số phí chính xác/ tháng",
     "insuranceAmount": "Số tiền bảo hiểm",
     "submitButton": "Gửi Yêu Cầu Báo Giá",
     "validation": {
