@@ -1,4 +1,3 @@
-import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import Navbar from '../components/Navbar';
@@ -46,7 +45,6 @@ describe('Navbar Component', () => {
   test('renders security icon', () => {
     renderWithProviders(<Navbar />);
     // Since it's an icon, we can check if it exists by looking for the MUI SecurityIcon
-    const securityIcon = document.querySelector('[data-testid="SecurityIcon"]');
     expect(document.querySelector('svg')).toBeInTheDocument();
   });
 

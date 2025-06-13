@@ -124,6 +124,27 @@
     "boolean": {
       "yes": "Yes",
       "no": "No"
-    }
+    },
+    "title": "Insurance Quote List",
+    "emptyMessage": "No quote data available"
+  },
+  "occupations": {
+    "office": "Office Worker",
+    "teacher": "Teacher",
+    "doctor": "Doctor",
+    "engineer": "Engineer",
+    "business": "Business",
+    "other": "Other"
+  },
+  "genders": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "form": {
+    "select": "Select",
+    "enter": "Enter",
+    "accidentInsurance": "Accident Insurance",
+    "ageValidation": "Age must be 18 or older",
+    "invalidAge": "Invalid age"
   }
 }

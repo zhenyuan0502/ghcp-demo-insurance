@@ -198,22 +198,22 @@ const Dashboard: React.FC = () => {
       <TableContainer component={Paper}>        <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Tên bên mua bảo hiểm</TableCell>
-            <TableCell>Tên được bảo hiểm</TableCell>
-            <TableCell>Loại Bảo Hiểm</TableCell>
-            <TableCell>Số Tiền Bảo Hiểm</TableCell>
-            <TableCell>Phí Bảo Hiểm</TableCell>
-            <TableCell>Trạng Thái</TableCell>
-            <TableCell>Ngày</TableCell>
-            <TableCell>Hành Động</TableCell>
+            <TableCell>{t.table.columns.purchaserName}</TableCell>
+            <TableCell>{t.table.columns.insuredName}</TableCell>
+            <TableCell>{t.table.columns.insuranceType}</TableCell>
+            <TableCell>{t.table.columns.coverageAmount}</TableCell>
+            <TableCell>{t.table.columns.premium}</TableCell>
+            <TableCell>{t.table.columns.status}</TableCell>
+            <TableCell>{t.table.columns.createdAt}</TableCell>
+            <TableCell>{t.dashboard.actions}</TableCell>
           </TableRow>
         </TableHead>          <TableBody>
           {quotes && quotes.length > 0 ? quotes.map((quote) => (
             <TableRow key={quote.id}>              <TableCell>
-              {quote.purchaserName || 'Khách hàng'}
+              {quote.purchaserName || t.table.defaultValues.customer}
             </TableCell>
               <TableCell>
-                {quote.insuredName || 'Người được bảo hiểm'}
+                {quote.insuredName || t.table.defaultValues.insuredPerson}
               </TableCell>
               <TableCell style={{ textTransform: 'capitalize' }}>
                 {quote.insuranceType}
@@ -245,7 +245,7 @@ const Dashboard: React.FC = () => {
           )) : (
             <TableRow>
               <TableCell colSpan={8} style={{ textAlign: 'center' }}>
-                Không có dữ liệu báo giá
+                {t.table.emptyMessage}
               </TableCell>
             </TableRow>
           )}

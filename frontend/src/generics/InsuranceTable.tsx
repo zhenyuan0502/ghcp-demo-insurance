@@ -3,8 +3,8 @@ import { Menu, MenuItem, Chip } from '@mui/material';
 import GenericTable, { TableColumn, TableAction } from './GenericTable';
 import {
     formatters,
-    defaultStatusConfig,
-    insuranceTypeConfig,
+    getDefaultStatusConfig,
+    getInsuranceTypeConfig,
     createCommonActions,
     tablePresets
 } from './tableUtils';
@@ -43,9 +43,13 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
     selectable = false,
     onSelectionChange,
 }) => {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
     const [statusMenuAnchor, setStatusMenuAnchor] = useState<null | HTMLElement>(null);
     const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+
+    // Get status and insurance type configs for current language
+    const statusConfig = getDefaultStatusConfig(language);
+    const insTypeConfig = getInsuranceTypeConfig(language);
 
     // Handle status change click
     const handleStatusClick = (event: React.MouseEvent<HTMLElement>, quote: Quote) => {
@@ -70,38 +74,38 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
     const columns: TableColumn<Quote>[] = [
         {
             id: 'purchaserName',
-            label: 'Tên bên mua bảo hiểm',
-            render: (value: any) => value || 'Khách hàng',
+            label: t.table.columns.purchaserName,
+            render: (value: any) => value || t.table.defaultValues.customer,
         },
         {
             id: 'insuredName',
-            label: 'Tên được bảo hiểm',
-            render: (value: any) => value || 'Người được bảo hiểm',
+            label: t.table.columns.insuredName,
+            render: (value: any) => value || t.table.defaultValues.insuredPerson,
         },
         {
             id: 'insuranceType',
-            label: 'Loại Bảo Hiểm',
-            render: (value: string) => formatters.status(value, insuranceTypeConfig),
+            label: t.table.columns.insuranceType,
+            render: (value: string) => formatters.status(value, insTypeConfig),
         },
         {
             id: 'coverageAmount',
-            label: 'Số Tiền Bảo Hiểm',
+            label: t.table.columns.coverageAmount,
             align: 'right',
             format: formatters.currency,
         },
         {
             id: 'premium',
-            label: 'Phí Bảo Hiểm',
+            label: t.table.columns.premium,
             align: 'right',
             format: formatters.currency,
         },
         {
             id: 'status',
-            label: 'Trạng Thái',
+            label: t.table.columns.status,
             align: 'center',
             sortable: false,
             render: (value: string, row: Quote) => {
-                const statusInfo = defaultStatusConfig[value] || defaultStatusConfig.default;
+                const statusInfo = statusConfig[value] || statusConfig.default;
                 return React.createElement(Chip, {
                     onClick: onStatusChange ? (e: React.MouseEvent<HTMLElement>) => handleStatusClick(e, row) : undefined,
                     label: statusInfo.label,
@@ -113,7 +117,7 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
         },
         {
             id: 'createdAt',
-            label: 'Ngày',
+            label: t.table.columns.createdAt,
             format: formatters.date,
         },
     ];
@@ -132,9 +136,9 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
                 data={quotes}
                 columns={columns}
                 actions={actions}
-                title="Danh sách báo giá bảo hiểm"
+                title={t.table.title}
                 loading={loading}
-                emptyMessage="Không có dữ liệu báo giá"
+                emptyMessage={t.table.emptyMessage}
                 selectable={selectable}
                 onSelectionChange={onSelectionChange}
                 {...tablePresets.standard}
@@ -149,30 +153,30 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
                 >
                     <MenuItem onClick={() => handleStatusUpdate('pending')}>
                         {React.createElement(Chip, {
-                            label: 'Chờ duyệt',
+                            label: t.dashboard.status.pending,
                             color: 'warning',
                             size: 'small',
                             sx: { mr: 1, pointerEvents: 'none' }
                         })}
-                        Chờ duyệt
+                        {t.dashboard.statusActions.markPending}
                     </MenuItem>
                     <MenuItem onClick={() => handleStatusUpdate('approved')}>
                         {React.createElement(Chip, {
-                            label: 'Đã duyệt',
+                            label: t.dashboard.status.approved,
                             color: 'success',
                             size: 'small',
                             sx: { mr: 1, pointerEvents: 'none' }
                         })}
-                        Duyệt
+                        {t.dashboard.statusActions.approve}
                     </MenuItem>
                     <MenuItem onClick={() => handleStatusUpdate('rejected')}>
                         {React.createElement(Chip, {
-                            label: 'Từ chối',
+                            label: t.dashboard.status.rejected,
                             color: 'error',
                             size: 'small',
                             sx: { mr: 1, pointerEvents: 'none' }
                         })}
-                        Từ chối
+                        {t.dashboard.statusActions.reject}
                     </MenuItem>
                 </Menu>
             )}

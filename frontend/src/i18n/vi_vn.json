@@ -124,6 +124,27 @@
     "boolean": {
       "yes": "Có",
       "no": "Không"
-    }
+    },
+    "title": "Danh sách báo giá bảo hiểm",
+    "emptyMessage": "Không có dữ liệu báo giá"
+  },
+  "occupations": {
+    "office": "Văn phòng",
+    "teacher": "Giáo viên",
+    "doctor": "Bác sĩ",
+    "engineer": "Kỹ sư",
+    "business": "Kinh doanh",
+    "other": "Khác"
+  },
+  "genders": {
+    "male": "Nam",
+    "female": "Nữ"
+  },
+  "form": {
+    "select": "Chọn",
+    "enter": "Nhập",
+    "accidentInsurance": "Bảo hiểm tai nạn",
+    "ageValidation": "Tuổi phải từ 18 trở lên",
+    "invalidAge": "Tuổi không hợp lệ"
   }
 }

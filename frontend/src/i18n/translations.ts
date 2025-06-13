@@ -130,6 +130,27 @@ export interface Translations {
       yes: string;
       no: string;
     };
+    title: string;
+    emptyMessage: string;
+  };
+  occupations: {
+    office: string;
+    teacher: string;
+    doctor: string;
+    engineer: string;
+    business: string;
+    other: string;
+  };
+  genders: {
+    male: string;
+    female: string;
+  };
+  form: {
+    select: string;
+    enter: string;
+    accidentInsurance: string;
+    ageValidation: string;
+    invalidAge: string;
   };
 }
 
