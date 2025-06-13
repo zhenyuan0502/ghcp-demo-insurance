@@ -47,8 +47,8 @@
     "age": "Tuổi",
     "occupation": "Nghề nghiệp",
     "paymentYears": "Số năm đóng",
-    "monthlyPremium": "Số phí dự kiến/ tháng",
-    "yearlyPremium": "Số phí chính xác/ tháng",
+    "estimatedCostPerMonth": "Số phí dự kiến/ tháng",
+    "exactCostPerMonth": "Số phí chính xác/ tháng",
     "insuranceAmount": "Số tiền bảo hiểm",
     "submitButton": "Gửi Yêu Cầu Báo Giá",
     "validation": {
@@ -57,8 +57,8 @@
       "enterAge": "Vui lòng nhập tuổi.",
       "enterOccupation": "Vui lòng nhập nghề nghiệp.",
       "enterAmount": "Vui lòng nhập số tiền bảo hiểm.",
-      "enterMonthlyPremium": "Vui lòng nhập phí hàng tháng.",
-      "enterYearlyPremium": "Vui lòng nhập phí hàng năm."
+      "enterEstimatedCostPerMonth": "Vui lòng nhập phí dự kiến hằng tháng.",
+      "enterExactCostPerMonth": "Vui lòng nhập phí chính xác hằng tháng."
     },
     "notifications": {
       "submitSuccess": "Gửi yêu cầu báo giá thành công",

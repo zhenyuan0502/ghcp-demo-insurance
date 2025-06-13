@@ -454,7 +454,7 @@ const QuoteForm: React.FC = () => {
                           onChange(raw);
                         }}
                         fullWidth
-                        label={t.quote.monthlyPremium}
+                        label={t.quote.estimatedCostPerMonth}
                         InputProps={{
                           endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>,
                           inputProps: { inputMode: 'numeric', pattern: '[0-9,]*' },
@@ -488,7 +488,7 @@ const QuoteForm: React.FC = () => {
                           onChange(raw);
                         }}
                         fullWidth
-                        label={t.quote.yearlyPremium}
+                        label={t.quote.exactCostPerMonth}
                         InputProps={{
                           endAdornment: <Typography variant="body2" color="text.secondary">VND</Typography>,
                           inputProps: { inputMode: 'numeric', pattern: '[0-9,]*' },

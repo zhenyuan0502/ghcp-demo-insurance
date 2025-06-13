@@ -52,8 +52,8 @@ export interface Translations {
     age: string;
     occupation: string;
     paymentYears: string;
-    monthlyPremium: string;
-    yearlyPremium: string;
+    estimatedCostPerMonth: string;
+    exactCostPerMonth: string;
     insuranceAmount: string;
     submitButton: string;
     validation: {
@@ -62,8 +62,8 @@ export interface Translations {
       enterAge: string;
       enterOccupation: string;
       enterAmount: string;
-      enterMonthlyPremium: string;
-      enterYearlyPremium: string;
+      enterEstimatedCostPerMonth: string;
+      enterExactCostPerMonth: string;
     };
     notifications: {
       submitSuccess: string;
