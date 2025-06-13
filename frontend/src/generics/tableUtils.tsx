@@ -1,6 +1,7 @@
 import React from 'react';
 import { Chip, Typography } from '@mui/material';
 import { TableColumn, TableAction } from './GenericTable';
+import { getTranslations, Language } from '../i18n/translations';
 
 // Status configuration interface
 export interface StatusConfig {
@@ -11,65 +12,72 @@ export interface StatusConfig {
     };
 }
 
-// Default status configuration for insurance quotes
-export const defaultStatusConfig: StatusConfig = {
-    pending: {
-        label: 'Chờ duyệt',
-        color: 'warning',
-    },
-    approved: {
-        label: 'Đã duyệt',
-        color: 'success',
-    },
-    rejected: {
-        label: 'Từ chối',
-        color: 'error',
-    },
-    expired: {
-        label: 'Hết hạn',
-        color: 'default',
-    },
-    default: {
-        label: 'Không xác định',
-        color: 'default',
-    },
+// Default status configuration for insurance quotes - uses dictionary for translations
+export const getDefaultStatusConfig = (language: Language): StatusConfig => {
+    const t = getTranslations(language);
+    return {
+        pending: {
+            label: t.dashboard.status.pending,
+            color: 'warning',
+        },
+        approved: {
+            label: t.dashboard.status.approved,
+            color: 'success',
+        },
+        rejected: {
+            label: t.dashboard.status.rejected,
+            color: 'error',
+        },
+        expired: {
+            label: t.dashboard.status.expired,
+            color: 'default',
+        },
+        default: {
+            label: t.dashboard.status.unknown,
+            color: 'default',
+        },
+    };
 };
 
-// Insurance type configuration generator
-export const getInsuranceTypeConfig = (language: 'vi' | 'en'): StatusConfig => ({
-    health: {
-        label: language === 'vi' ? 'Sức khỏe' : 'Health',
-        color: 'success',
-        variant: 'outlined',
-    },
-    life: {
-        label: language === 'vi' ? 'Nhân thọ' : 'Life',
-        color: 'primary',
-        variant: 'outlined',
-    },
-    auto: {
-        label: language === 'vi' ? 'Xe cộ' : 'Auto',
-        color: 'info',
-        variant: 'outlined',
-    },
-    home: {
-        label: language === 'vi' ? 'Nhà ở' : 'Home',
-        color: 'warning',
-        variant: 'outlined',
-    },
-    travel: {
-        label: language === 'vi' ? 'Du lịch' : 'Travel',
-        color: 'secondary',
-        variant: 'outlined',
-    },
-    default: {
-        label: language === 'vi' ? 'Khác' : 'Other',
-        color: 'default',
-        variant: 'outlined',
-    },
-});
+// Insurance type configuration generator - uses dictionary for translations
+export const getInsuranceTypeConfig = (language: Language): StatusConfig => {
+    const t = getTranslations(language);
+    return {
+        health: {
+            label: t.insuranceTypes.health,
+            color: 'success',
+            variant: 'outlined',
+        },
+        life: {
+            label: t.insuranceTypes.life,
+            color: 'primary',
+            variant: 'outlined',
+        },
+        auto: {
+            label: t.insuranceTypes.auto,
+            color: 'info',
+            variant: 'outlined',
+        },
+        home: {
+            label: t.insuranceTypes.home,
+            color: 'warning',
+            variant: 'outlined',
+        },
+        travel: {
+            label: t.insuranceTypes.travel,
+            color: 'secondary',
+            variant: 'outlined',
+        },
+        default: {
+            label: t.insuranceTypes.other,
+            color: 'default',
+            variant: 'outlined',
+        },
+    };
+};
 
-// Default insurance type configuration (keeping for backward compatibility)
+// Default configurations for backward compatibility (using Vietnamese as default)
+export const defaultStatusConfig: StatusConfig = getDefaultStatusConfig('vi');
 export const insuranceTypeConfig: StatusConfig = getInsuranceTypeConfig('vi');
 
 // Common formatters
@@ -130,10 +138,12 @@ export const formatters = {
         );
     },
 
-    boolean: (value: any): React.ReactNode => {
+    // Boolean formatter that accepts language for translations
+    boolean: (value: any, language: Language = 'vi'): React.ReactNode => {
+        const t = getTranslations(language);
         return (
             <Chip
-                label={value ? 'Có' : 'Không'}
+                label={value ? t.table.boolean.yes : t.table.boolean.no}
                 color={value ? 'success' : 'default'}
                 size="small"
                 variant="outlined"
@@ -142,61 +152,68 @@ export const formatters = {
     },
 };
 
-// Pre-configured column sets for common use cases
-export const createInsuranceColumns = (): TableColumn[] => [
-    {
-        id: 'purchaserName',
-        label: 'Tên bên mua bảo hiểm',
-        render: (value: any) => value || 'Khách hàng',
-    },
-    {
-        id: 'insuredName',
-        label: 'Tên được bảo hiểm',
-        render: (value: any) => value || 'Người được bảo hiểm',
-    },
-    {
-        id: 'insuranceType',
-        label: 'Loại Bảo Hiểm',
-        render: (value: string) => formatters.status(value, insuranceTypeConfig),
-    },
-    {
-        id: 'coverageAmount',
-        label: 'Số Tiền Bảo Hiểm',
-        align: 'right' as const,
-        format: formatters.currency,
-    },
-    {
-        id: 'premium',
-        label: 'Phí Bảo Hiểm',
-        align: 'right' as const,
-        format: formatters.currency,
-    },
-    {
-        id: 'status',
-        label: 'Trạng Thái',
-        align: 'center' as const,
-        render: (value: string) => formatters.status(value, defaultStatusConfig),
-        sortable: false,
-    },
-    {
-        id: 'createdAt',
-        label: 'Ngày',
-        format: formatters.date,
-    },
-];
+// Pre-configured column sets for common use cases - uses dictionary for translations
+export const createInsuranceColumns = (language: Language = 'vi'): TableColumn[] => {
+    const t = getTranslations(language);
+    const insuranceTypeConfig = getInsuranceTypeConfig(language);
+    
+    return [
+        {
+            id: 'purchaserName',
+            label: t.table.columns.purchaserName,
+            render: (value: any) => value || t.table.defaultValues.customer,
+        },
+        {
+            id: 'insuredName',
+            label: t.table.columns.insuredName,
+            render: (value: any) => value || t.table.defaultValues.insuredPerson,
+        },
+        {
+            id: 'insuranceType',
+            label: t.table.columns.insuranceType,
+            render: (value: string) => formatters.status(value, insuranceTypeConfig),
+        },
+        {
+            id: 'coverageAmount',
+            label: t.table.columns.coverageAmount,
+            align: 'right' as const,
+            format: formatters.currency,
+        },
+        {
+            id: 'premium',
+            label: t.table.columns.premium,
+            align: 'right' as const,
+            format: formatters.currency,
+        },
+        {
+            id: 'status',
+            label: t.table.columns.status,
+            align: 'center' as const,
+            render: (value: string) => formatters.status(value, getDefaultStatusConfig(language)),
+            sortable: false,
+        },
+        {
+            id: 'createdAt',
+            label: t.table.columns.createdAt,
+            format: formatters.date,
+        },
+    ];
+};
 
-// Helper function to create common actions
+// Helper function to create common actions - uses dictionary for translations
 export const createCommonActions = <T,>(
+    language: Language = 'vi',
     onEdit?: (row: T) => void,
     onDelete?: (row: T) => void,
     onView?: (row: T) => void,
     customActions?: TableAction<T>[]
 ): TableAction<T>[] => {
+    const t = getTranslations(language);
     const actions: TableAction<T>[] = [];
 
     if (onView) {
         actions.push({
-            label: 'Xem chi tiết',
+            label: t.table.actions.viewDetails,
             onClick: onView,
             color: 'info',
         });
@@ -204,7 +221,7 @@ export const createCommonActions = <T,>(
 
     if (onEdit) {
         actions.push({
-            label: 'Chỉnh sửa',
+            label: t.table.actions.edit,
             onClick: onEdit,
             color: 'primary',
         });
@@ -212,7 +229,7 @@ export const createCommonActions = <T,>(
 
     if (onDelete) {
         actions.push({
-            label: 'Xóa',
+            label: t.table.actions.delete,
             onClick: onDelete,
             color: 'error',
         });

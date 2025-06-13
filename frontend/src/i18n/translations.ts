@@ -104,6 +104,30 @@ export interface Translations {
     travel: string;
     other: string;
   };
+  table: {
+    columns: {
+      purchaserName: string;
+      insuredName: string;
+      insuranceType: string;
+      coverageAmount: string;
+      premium: string;
+      status: string;
+      createdAt: string;
+    };
+    actions: {
+      viewDetails: string;
+      edit: string;
+      delete: string;
+    };
+    defaultValues: {
+      customer: string;
+      insuredPerson: string;
+    };
+    boolean: {
+      yes: string;
+      no: string;
+    };
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -211,6 +235,30 @@ export const translations: Record<Language, Translations> = {
       travel: 'Du lịch',
       other: 'Khác',
     },
+    table: {
+      columns: {
+        purchaserName: 'Tên bên mua bảo hiểm',
+        insuredName: 'Tên được bảo hiểm',
+        insuranceType: 'Loại Bảo Hiểm',
+        coverageAmount: 'Số Tiền Bảo Hiểm',
+        premium: 'Phí Bảo Hiểm',
+        status: 'Trạng Thái',
+        createdAt: 'Ngày',
+      },
+      actions: {
+        viewDetails: 'Xem chi tiết',
+        edit: 'Chỉnh sửa',
+        delete: 'Xóa',
+      },
+      defaultValues: {
+        customer: 'Khách hàng',
+        insuredPerson: 'Người được bảo hiểm',
+      },
+      boolean: {
+        yes: 'Có',
+        no: 'Không',
+      },
+    },
   },
   en: {
     common: {
@@ -315,6 +363,30 @@ export const translations: Record<Language, Translations> = {
       home: 'Home',
       travel: 'Travel',
       other: 'Other',
+    },
+    table: {
+      columns: {
+        purchaserName: 'Purchaser Name',
+        insuredName: 'Insured Name',
+        insuranceType: 'Insurance Type',
+        coverageAmount: 'Coverage Amount',
+        premium: 'Premium',
+        status: 'Status',
+        createdAt: 'Date',
+      },
+      actions: {
+        viewDetails: 'View Details',
+        edit: 'Edit',
+        delete: 'Delete',
+      },
+      defaultValues: {
+        customer: 'Customer',
+        insuredPerson: 'Insured Person',
+      },
+      boolean: {
+        yes: 'Yes',
+        no: 'No',
+      },
     },
   },
 };
