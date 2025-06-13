@@ -1,9 +1,7 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import Navbar from '../components/Navbar';
+import { renderWithProviders } from '../utils/test-utils';
 
 // Mock the theme context
 const mockToggleTheme = vi.fn();
@@ -13,18 +11,6 @@ vi.mock('../App', () => ({
     toggleTheme: mockToggleTheme
   })
 }));
-
-// Helper to render component with required providers
-const renderWithProviders = (component: React.ReactElement) => {
-  const theme = createTheme();
-  return render(
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        {component}
-      </ThemeProvider>
-    </BrowserRouter>
-  );
-};
 
 describe('Navbar Component', () => {
   beforeEach(() => {
@@ -59,19 +45,25 @@ describe('Navbar Component', () => {
   test('renders security icon', () => {
     renderWithProviders(<Navbar />);
     // Since it's an icon, we can check if it exists by looking for the MUI SecurityIcon
-    const securityIcon = document.querySelector('[data-testid="SecurityIcon"]');
     expect(document.querySelector('svg')).toBeInTheDocument();
   });
 
   test('renders theme toggle button', () => {
     renderWithProviders(<Navbar />);
-    const themeButton = screen.getByRole('button', { name: /switch to dark mode/i });
+    const themeButton = screen.getByRole('button', { name: /chuyển sang chế độ tối/i });
     expect(themeButton).toBeInTheDocument();
+  });
+
+  test('renders language toggle button', () => {
+    renderWithProviders(<Navbar />);
+    const languageButton = screen.getByRole('button', { name: 'VI' });
+    expect(languageButton).toBeInTheDocument();
+    expect(languageButton).toHaveAttribute('title', 'Chuyển sang tiếng Anh');
   });
 
   test('calls toggleTheme when theme button is clicked', () => {
     renderWithProviders(<Navbar />);
-    const themeButton = screen.getByRole('button', { name: /switch to dark mode/i });
+    const themeButton = screen.getByRole('button', { name: /chuyển sang chế độ tối/i });
     
     fireEvent.click(themeButton);
     expect(mockToggleTheme).toHaveBeenCalledTimes(1);

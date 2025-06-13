@@ -12,7 +12,6 @@ import {
     IconButton,
     Menu,
     MenuItem,
-    Chip,
     Box,
     Typography,
     TablePagination,
@@ -160,7 +159,7 @@ function GenericTable<T extends Record<string, any>>({
     const isSelected = (row: T) => selected.indexOf(getRowId(row)) !== -1;
 
     // Pagination logic
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 

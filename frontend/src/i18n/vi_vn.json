@@ -1,0 +1,150 @@
+{
+  "common": {
+    "currency": "VND",
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "save": "Lưu"
+  },
+  "navbar": {
+    "title": "Bảo Hiểm An Toàn",
+    "home": "Trang Chủ",
+    "quote": "Báo Giá",
+    "dashboard": "Bảng Điều Khiển",
+    "switchToDark": "Chuyển sang chế độ tối",
+    "switchToLight": "Chuyển sang chế độ sáng",
+    "switchToVietnamese": "Chuyển sang tiếng Việt",
+    "switchToEnglish": "Chuyển sang tiếng Anh"
+  },
+  "home": {
+    "title": "Chào Mừng Đến Với Bảo Hiểm An Toàn",
+    "subtitle": "Đối tác tin cậy cho các giải pháp bảo hiểm toàn diện",
+    "getQuoteButton": "Nhận Báo Giá Miễn Phí",
+    "lifeInsurance": {
+      "title": "Bảo Hiểm Nhân Thọ",
+      "description": "Bảo vệ tương lai tài chính của gia đình bạn"
+    },
+    "autoInsurance": {
+      "title": "Bảo Hiểm Ô Tô",
+      "description": "Bảo hiểm toàn diện cho xe của bạn"
+    },
+    "homeInsurance": {
+      "title": "Bảo Hiểm Nhà Ở",
+      "description": "Bảo vệ ngôi nhà và tài sản của bạn"
+    }
+  },
+  "quote": {
+    "title": "Báo Giá Bảo Hiểm",
+    "productType": "Loại sản phẩm",
+    "purchaserInfo": "Thông tin Bên mua bảo hiểm",
+    "insuredInfo": "Bên được bảo hiểm",
+    "sameAsInsured": "Thông tin Bên mua bảo hiểm & Bên được bao hiểm giống nhau:",
+    "gender": "Giới tính",
+    "age": "Tuổi",
+    "occupation": "Nghề nghiệp",
+    "paymentYears": "Số năm đóng",
+    "estimatedCostPerMonth": "Số phí dự kiến/ tháng",
+    "exactCostPerMonth": "Số phí chính xác/ tháng",
+    "insuranceAmount": "Số tiền bảo hiểm",
+    "submitButton": "Gửi Yêu Cầu Báo Giá",
+    "validation": {
+      "selectProduct": "Vui lòng chọn loại sản phẩm.",
+      "enterGender": "Vui lòng nhập giới tính.",
+      "enterAge": "Vui lòng nhập tuổi.",
+      "enterOccupation": "Vui lòng nhập nghề nghiệp.",
+      "enterAmount": "Vui lòng nhập số tiền bảo hiểm.",
+      "enterEstimatedCostPerMonth": "Vui lòng nhập phí dự kiến hằng tháng.",
+      "enterExactCostPerMonth": "Vui lòng nhập phí chính xác hằng tháng."
+    },
+    "notifications": {
+      "submitSuccess": "Gửi yêu cầu báo giá thành công",
+      "submitError": "Có lỗi xảy ra khi gửi yêu cầu báo giá"
+    }
+  },
+  "dashboard": {
+    "title": "Bảng Điều Khiển",
+    "actions": "Hành động",
+    "totalQuotes": "Tổng Báo Giá",
+    "pendingQuotes": "Báo Giá Chờ Duyệt",
+    "approvedQuotes": "Báo Giá Đã Duyệt",
+    "status": {
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "rejected": "Từ chối",
+      "expired": "Hết hạn",
+      "unknown": "Không xác định"
+    },
+    "statusActions": {
+      "approve": "Duyệt",
+      "reject": "Từ chối",
+      "markPending": "Chờ duyệt"
+    },
+    "notifications": {
+      "updateSuccess": "Cập nhật trạng thái thành công",
+      "updateError": "Có lỗi xảy ra khi cập nhật trạng thái",
+      "deleteSuccess": "Xóa báo giá thành công",
+      "deleteError": "Có lỗi xảy ra khi xóa báo giá"
+    },
+    "deleteDialog": {
+      "title": "Xác nhận xóa",
+      "message": "Bạn có chắc chắn muốn xóa báo giá này không?"
+    }
+  },
+  "insuranceTypes": {
+    "health": "Sức khỏe",
+    "life": "Nhân thọ",
+    "auto": "Xe cộ",
+    "home": "Nhà ở",
+    "travel": "Du lịch",
+    "other": "Khác"
+  },
+  "table": {
+    "columns": {
+      "purchaserName": "Tên bên mua bảo hiểm",
+      "insuredName": "Tên được bảo hiểm",
+      "insuranceType": "Loại Bảo Hiểm",
+      "coverageAmount": "Số Tiền Bảo Hiểm",
+      "premium": "Phí Bảo Hiểm",
+      "status": "Trạng Thái",
+      "createdAt": "Ngày"
+    },
+    "actions": {
+      "viewDetails": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa"
+    },
+    "defaultValues": {
+      "customer": "Khách hàng",
+      "insuredPerson": "Người được bảo hiểm"
+    },
+    "boolean": {
+      "yes": "Có",
+      "no": "Không"
+    },
+    "title": "Danh sách báo giá bảo hiểm",
+    "emptyMessage": "Không có dữ liệu báo giá"
+  },
+  "occupations": {
+    "office": "Văn phòng",
+    "teacher": "Giáo viên",
+    "doctor": "Bác sĩ",
+    "engineer": "Kỹ sư",
+    "business": "Kinh doanh",
+    "other": "Khác"
+  },
+  "genders": {
+    "male": "Nam",
+    "female": "Nữ"
+  },
+  "form": {
+    "select": "Chọn",
+    "enter": "Nhập",
+    "accidentInsurance": "Bảo hiểm tai nạn",
+    "ageValidation": "Tuổi phải từ 18 trở lên",
+    "invalidAge": "Tuổi không hợp lệ"
+  }
+}

@@ -27,6 +27,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Quote {
   id: number;
@@ -40,6 +41,7 @@ interface Quote {
 }
 
 const Dashboard: React.FC = () => {
+  const { t } = useLanguage();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedQuoteId, setSelectedQuoteId] = useState<number | null>(null);
@@ -91,7 +93,7 @@ const Dashboard: React.FC = () => {
       )); handleStatusClose();
     } catch (error) {
       console.error('Error updating quote status:', error);
-      showSnackbar('Có lỗi xảy ra khi cập nhật trạng thái', 'error');
+      showSnackbar(t.dashboard.notifications.updateError, 'error');
     }
   };
   const handleDeleteQuote = async (quoteId: number) => {
@@ -109,10 +111,10 @@ const Dashboard: React.FC = () => {
       console.log('Quote deleted successfully');
       setDeleteDialogOpen(false);
       setQuoteToDelete(null);
-      showSnackbar('Xóa báo giá thành công', 'success');
+      showSnackbar(t.dashboard.notifications.deleteSuccess, 'success');
     } catch (error) {
       console.error('Error deleting quote:', error);
-      showSnackbar('Có lỗi xảy ra khi xóa báo giá', 'error');
+      showSnackbar(t.dashboard.notifications.deleteError, 'error');
       setDeleteDialogOpen(false);
       setQuoteToDelete(null);
     }
@@ -134,9 +136,9 @@ const Dashboard: React.FC = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'pending': return 'Chờ duyệt';
-      case 'approved': return 'Đã duyệt';
-      case 'rejected': return 'Từ chối';
+      case 'pending': return t.dashboard.status.pending;
+      case 'approved': return t.dashboard.status.approved;
+      case 'rejected': return t.dashboard.status.rejected;
       default: return status;
     }
   };
@@ -155,13 +157,13 @@ const Dashboard: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>      <Typography variant="h4" component="h1" gutterBottom>
-      Bảng Điều Khiển Bảo Hiểm
+      {t.dashboard.title}
     </Typography>      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
         <Box sx={{ flex: '1 1 300px' }}>
           <Card>
             <CardContent>
               <Typography variant="h6" component="h2">
-                Tổng Báo Giá
+                {t.dashboard.totalQuotes}
               </Typography>
               <Typography variant="h4" color="primary">
                 {quotes.length}
@@ -172,7 +174,7 @@ const Dashboard: React.FC = () => {
         <Box sx={{ flex: '1 1 300px' }}>
           <Card>
             <CardContent>              <Typography variant="h6" component="h2">
-              Báo Giá Chờ Duyệt
+              {t.dashboard.pendingQuotes}
             </Typography>
               <Typography variant="h4" color="warning.main">
                 {quotes.filter(q => q.status === 'pending').length}
@@ -183,7 +185,7 @@ const Dashboard: React.FC = () => {
         <Box sx={{ flex: '1 1 300px' }}>
           <Card>
             <CardContent>              <Typography variant="h6" component="h2">
-              Báo Giá Đã Duyệt
+              {t.dashboard.approvedQuotes}
             </Typography>
               <Typography variant="h4" color="success.main">
                 {quotes.filter(q => q.status === 'approved').length}
@@ -196,22 +198,22 @@ const Dashboard: React.FC = () => {
       <TableContainer component={Paper}>        <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Tên bên mua bảo hiểm</TableCell>
-            <TableCell>Tên được bảo hiểm</TableCell>
-            <TableCell>Loại Bảo Hiểm</TableCell>
-            <TableCell>Số Tiền Bảo Hiểm</TableCell>
-            <TableCell>Phí Bảo Hiểm</TableCell>
-            <TableCell>Trạng Thái</TableCell>
-            <TableCell>Ngày</TableCell>
-            <TableCell>Hành Động</TableCell>
+            <TableCell>{t.table.columns.purchaserName}</TableCell>
+            <TableCell>{t.table.columns.insuredName}</TableCell>
+            <TableCell>{t.table.columns.insuranceType}</TableCell>
+            <TableCell>{t.table.columns.coverageAmount}</TableCell>
+            <TableCell>{t.table.columns.premium}</TableCell>
+            <TableCell>{t.table.columns.status}</TableCell>
+            <TableCell>{t.table.columns.createdAt}</TableCell>
+            <TableCell>{t.dashboard.actions}</TableCell>
           </TableRow>
         </TableHead>          <TableBody>
           {quotes && quotes.length > 0 ? quotes.map((quote) => (
             <TableRow key={quote.id}>              <TableCell>
-              {quote.purchaserName || 'Khách hàng'}
+              {quote.purchaserName || t.table.defaultValues.customer}
             </TableCell>
               <TableCell>
-                {quote.insuredName || 'Người được bảo hiểm'}
+                {quote.insuredName || t.table.defaultValues.insuredPerson}
               </TableCell>
               <TableCell style={{ textTransform: 'capitalize' }}>
                 {quote.insuranceType}
@@ -243,7 +245,7 @@ const Dashboard: React.FC = () => {
           )) : (
             <TableRow>
               <TableCell colSpan={8} style={{ textAlign: 'center' }}>
-                Không có dữ liệu báo giá
+                {t.table.emptyMessage}
               </TableCell>
             </TableRow>
           )}
@@ -257,30 +259,30 @@ const Dashboard: React.FC = () => {
       >
         <MenuItem onClick={() => updateQuoteStatus('pending')}>
           <Chip
-            label="Chờ duyệt"
+            label={t.dashboard.status.pending}
             color="warning"
             size="small"
             sx={{ mr: 1, pointerEvents: 'none' }}
           />
-          Chờ duyệt
+          {t.dashboard.statusActions.markPending}
         </MenuItem>
         <MenuItem onClick={() => updateQuoteStatus('approved')}>
           <Chip
-            label="Đã duyệt"
+            label={t.dashboard.status.approved}
             color="success"
             size="small"
             sx={{ mr: 1, pointerEvents: 'none' }}
           />
-          Duyệt
+          {t.dashboard.statusActions.approve}
         </MenuItem>
         <MenuItem onClick={() => updateQuoteStatus('rejected')}>
           <Chip
-            label="Từ chối"
+            label={t.dashboard.status.rejected}
             color="error"
             size="small"
             sx={{ mr: 1, pointerEvents: 'none' }}
           />
-          Từ chối        </MenuItem>
+          {t.dashboard.statusActions.reject}        </MenuItem>
       </Menu>
 
       {/* Modern Delete Confirmation Dialog */}
@@ -302,11 +304,11 @@ const Dashboard: React.FC = () => {
           }}
         >
           <DeleteIcon />
-          Xác nhận xóa báo giá
+          {t.dashboard.deleteDialog.title}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-dialog-description">
-            Bạn có chắc chắn muốn xóa báo giá này không? Hành động này không thể hoàn tác.
+            {t.dashboard.deleteDialog.message}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2, gap: 1 }}>
@@ -315,7 +317,7 @@ const Dashboard: React.FC = () => {
             variant="outlined"
             color="inherit"
           >
-            Hủy bỏ
+            {t.common.cancel}
           </Button>
           <Button
             onClick={confirmDeleteQuote}
@@ -323,7 +325,7 @@ const Dashboard: React.FC = () => {
             color="error"
             startIcon={<DeleteIcon />}
           >
-            Xóa
+            {t.common.delete}
           </Button>
         </DialogActions>
       </Dialog>

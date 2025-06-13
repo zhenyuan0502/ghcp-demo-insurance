@@ -1,0 +1,150 @@
+{
+  "common": {
+    "currency": "VND",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save"
+  },
+  "navbar": {
+    "title": "Safe Insurance",
+    "home": "Home",
+    "quote": "Quote",
+    "dashboard": "Dashboard",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode",
+    "switchToVietnamese": "Switch to Vietnamese",
+    "switchToEnglish": "Switch to English"
+  },
+  "home": {
+    "title": "Welcome to Safe Insurance",
+    "subtitle": "Your trusted partner for comprehensive insurance solutions",
+    "getQuoteButton": "Get Free Quote",
+    "lifeInsurance": {
+      "title": "Life Insurance",
+      "description": "Protect your family's financial future"
+    },
+    "autoInsurance": {
+      "title": "Auto Insurance",
+      "description": "Comprehensive coverage for your vehicle"
+    },
+    "homeInsurance": {
+      "title": "Home Insurance",
+      "description": "Protect your home and belongings"
+    }
+  },
+  "quote": {
+    "title": "Insurance Quote",
+    "productType": "Product Type",
+    "purchaserInfo": "Purchaser Information",
+    "insuredInfo": "Insured Person",
+    "sameAsInsured": "Purchaser and Insured Person information are the same:",
+    "gender": "Gender",
+    "age": "Age",
+    "occupation": "Occupation",
+    "paymentYears": "Payment Years",
+    "estimatedCostPerMonth": "Estimated Cost Per Month",
+    "exactCostPerMonth": "Exact Cost Per Month",
+    "insuranceAmount": "Insurance Amount",
+    "submitButton": "Submit Quote Request",
+    "validation": {
+      "selectProduct": "Please select a product type.",
+      "enterGender": "Please enter gender.",
+      "enterAge": "Please enter age.",
+      "enterOccupation": "Please enter occupation.",
+      "enterAmount": "Please enter insurance amount.",
+      "enterEstimatedCostPerMonth": "Please enter estimated cost per month.",
+      "enterExactCostPerMonth": "Please enter exact cost per month."
+    },
+    "notifications": {
+      "submitSuccess": "Quote request submitted successfully",
+      "submitError": "An error occurred while submitting quote request"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "actions": "Actions",
+    "totalQuotes": "Total Quotes",
+    "pendingQuotes": "Pending Quotes",
+    "approvedQuotes": "Approved Quotes",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "unknown": "Unknown"
+    },
+    "statusActions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "markPending": "Mark Pending"
+    },
+    "notifications": {
+      "updateSuccess": "Status updated successfully",
+      "updateError": "An error occurred while updating status",
+      "deleteSuccess": "Quote deleted successfully",
+      "deleteError": "An error occurred while deleting quote"
+    },
+    "deleteDialog": {
+      "title": "Confirm Delete",
+      "message": "Are you sure you want to delete this quote?"
+    }
+  },
+  "insuranceTypes": {
+    "health": "Health",
+    "life": "Life",
+    "auto": "Auto",
+    "home": "Home",
+    "travel": "Travel",
+    "other": "Other"
+  },
+  "table": {
+    "columns": {
+      "purchaserName": "Purchaser Name",
+      "insuredName": "Insured Name",
+      "insuranceType": "Insurance Type",
+      "coverageAmount": "Coverage Amount",
+      "premium": "Premium",
+      "status": "Status",
+      "createdAt": "Date"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "defaultValues": {
+      "customer": "Customer",
+      "insuredPerson": "Insured Person"
+    },
+    "boolean": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "title": "Insurance Quote List",
+    "emptyMessage": "No quote data available"
+  },
+  "occupations": {
+    "office": "Office Worker",
+    "teacher": "Teacher",
+    "doctor": "Doctor",
+    "engineer": "Engineer",
+    "business": "Business",
+    "other": "Other"
+  },
+  "genders": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "form": {
+    "select": "Select",
+    "enter": "Enter",
+    "accidentInsurance": "Accident Insurance",
+    "ageValidation": "Age must be 18 or older",
+    "invalidAge": "Invalid age"
+  }
+}
