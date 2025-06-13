@@ -8,6 +8,7 @@ import {
     createCommonActions,
     tablePresets
 } from './tableUtils';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // Insurance Quote interface
 export interface Quote {
@@ -42,6 +43,7 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
     selectable = false,
     onSelectionChange,
 }) => {
+    const { language } = useLanguage();
     const [statusMenuAnchor, setStatusMenuAnchor] = useState<null | HTMLElement>(null);
     const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
 
@@ -118,6 +120,7 @@ const InsuranceTable: React.FC<InsuranceTableProps> = ({
 
     // Define actions
     const actions: TableAction<Quote>[] = createCommonActions(
+        language,
         onEdit,
         onDelete ? (quote: Quote) => onDelete(quote.id) : undefined,
         onView
