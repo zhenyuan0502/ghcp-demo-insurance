@@ -35,39 +35,42 @@ export const defaultStatusConfig: StatusConfig = {
     },
 };
 
-// Insurance type configuration
-export const insuranceTypeConfig: StatusConfig = {
+// Insurance type configuration generator
+export const getInsuranceTypeConfig = (language: 'vi' | 'en'): StatusConfig => ({
     health: {
-        label: 'Sức khỏe',
+        label: language === 'vi' ? 'Sức khỏe' : 'Health',
         color: 'success',
         variant: 'outlined',
     },
     life: {
-        label: 'Nhân thọ',
+        label: language === 'vi' ? 'Nhân thọ' : 'Life',
         color: 'primary',
         variant: 'outlined',
     },
     auto: {
-        label: 'Xe cộ',
+        label: language === 'vi' ? 'Xe cộ' : 'Auto',
         color: 'info',
         variant: 'outlined',
     },
     home: {
-        label: 'Nhà ở',
+        label: language === 'vi' ? 'Nhà ở' : 'Home',
         color: 'warning',
         variant: 'outlined',
     },
     travel: {
-        label: 'Du lịch',
+        label: language === 'vi' ? 'Du lịch' : 'Travel',
         color: 'secondary',
         variant: 'outlined',
     },
     default: {
-        label: 'Khác',
+        label: language === 'vi' ? 'Khác' : 'Other',
         color: 'default',
         variant: 'outlined',
     },
-};
+});
+
+// Default insurance type configuration (keeping for backward compatibility)
+export const insuranceTypeConfig: StatusConfig = getInsuranceTypeConfig('vi');
 
 // Common formatters
 export const formatters = {

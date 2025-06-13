@@ -48,6 +48,9 @@ export interface Translations {
     gender: string;
     age: string;
     occupation: string;
+    paymentYears: string;
+    monthlyPremium: string;
+    yearlyPremium: string;
     insuranceAmount: string;
     submitButton: string;
     validation: {
@@ -56,6 +59,8 @@ export interface Translations {
       enterAge: string;
       enterOccupation: string;
       enterAmount: string;
+      enterMonthlyPremium: string;
+      enterYearlyPremium: string;
     };
     notifications: {
       submitSuccess: string;
@@ -65,6 +70,9 @@ export interface Translations {
   dashboard: {
     title: string;
     actions: string;
+    totalQuotes: string;
+    pendingQuotes: string;
+    approvedQuotes: string;
     status: {
       pending: string;
       approved: string;
@@ -147,6 +155,9 @@ export const translations: Record<Language, Translations> = {
       gender: 'Giới tính',
       age: 'Tuổi',
       occupation: 'Nghề nghiệp',
+      paymentYears: 'Số năm đóng',
+      monthlyPremium: 'Phí hàng tháng',
+      yearlyPremium: 'Phí hàng năm',
       insuranceAmount: 'Số tiền bảo hiểm',
       submitButton: 'Gửi Yêu Cầu Báo Giá',
       validation: {
@@ -155,6 +166,8 @@ export const translations: Record<Language, Translations> = {
         enterAge: 'Vui lòng nhập tuổi.',
         enterOccupation: 'Vui lòng nhập nghề nghiệp.',
         enterAmount: 'Vui lòng nhập số tiền bảo hiểm.',
+        enterMonthlyPremium: 'Vui lòng nhập phí hàng tháng.',
+        enterYearlyPremium: 'Vui lòng nhập phí hàng năm.',
       },
       notifications: {
         submitSuccess: 'Gửi yêu cầu báo giá thành công',
@@ -164,6 +177,9 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       title: 'Bảng Điều Khiển',
       actions: 'Hành động',
+      totalQuotes: 'Tổng Báo Giá',
+      pendingQuotes: 'Báo Giá Chờ Duyệt',
+      approvedQuotes: 'Báo Giá Đã Duyệt',
       status: {
         pending: 'Chờ duyệt',
         approved: 'Đã duyệt',
@@ -244,6 +260,9 @@ export const translations: Record<Language, Translations> = {
       gender: 'Gender',
       age: 'Age',
       occupation: 'Occupation',
+      paymentYears: 'Payment Years',
+      monthlyPremium: 'Monthly Premium',
+      yearlyPremium: 'Yearly Premium',
       insuranceAmount: 'Insurance Amount',
       submitButton: 'Submit Quote Request',
       validation: {
@@ -252,6 +271,8 @@ export const translations: Record<Language, Translations> = {
         enterAge: 'Please enter age.',
         enterOccupation: 'Please enter occupation.',
         enterAmount: 'Please enter insurance amount.',
+        enterMonthlyPremium: 'Please enter monthly premium.',
+        enterYearlyPremium: 'Please enter yearly premium.',
       },
       notifications: {
         submitSuccess: 'Quote request submitted successfully',
@@ -261,6 +282,9 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       title: 'Dashboard',
       actions: 'Actions',
+      totalQuotes: 'Total Quotes',
+      pendingQuotes: 'Pending Quotes',
+      approvedQuotes: 'Approved Quotes',
       status: {
         pending: 'Pending',
         approved: 'Approved',
