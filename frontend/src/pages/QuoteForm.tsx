@@ -372,7 +372,7 @@ const QuoteForm: React.FC = () => {
                       fullWidth
                       label={t.quote.age}
                       type="number"
-                      placeholder={language === 'vi' ? 'Nhập' : 'Enter'}
+                      placeholder={t.form.enter}
                       disabled={sameAsInsured} error={!sameAsInsured && !!errors.insuredAge}
                       helperText={!sameAsInsured ? errors.insuredAge?.message : ''}
                       InputProps={{
