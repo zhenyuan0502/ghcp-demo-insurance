@@ -2,6 +2,11 @@ import pytest
 import json
 import os
 import tempfile
+
+# Set test environment before importing app
+os.environ['DATABASE_TYPE'] = 'sqlite'
+os.environ['SQLITE_DATABASE_URL'] = 'sqlite:///:memory:'
+
 from app import app, db, calculate_premium, Quote
 
 @pytest.fixture

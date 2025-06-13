@@ -11,7 +11,14 @@ const PORT = process.env.PORT || 5000;
 let sequelizeConfig;
 const dbType = process.env.DATABASE_TYPE || 'sqlite';
 
-if (dbType === 'postgresql') {
+// Use in-memory SQLite for testing
+if (process.env.NODE_ENV === 'test') {
+  sequelizeConfig = {
+    dialect: 'sqlite',
+    storage: ':memory:',
+    logging: false
+  };
+} else if (dbType === 'postgresql') {
   // PostgreSQL configuration
   const dbUrl = `postgresql://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`;
   sequelizeConfig = {
