@@ -82,7 +82,7 @@ else {
     }
 
     Write-Host "Running React tests..." -ForegroundColor Cyan
-    $reactResult = npm test -- --verbose
+    $reactResult = npm test
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ React frontend tests PASSED" -ForegroundColor Green
         $testResults += "Frontend-React: PASSED"
