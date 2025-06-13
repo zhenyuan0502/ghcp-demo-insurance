@@ -1,9 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import Home from '../pages/Home';
+import { renderWithProviders } from '../utils/test-utils';
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -14,18 +13,6 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => mockNavigate
   };
 });
-
-// Helper to render component with required providers
-const renderWithProviders = (component: React.ReactElement) => {
-  const theme = createTheme();
-  return render(
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        {component}
-      </ThemeProvider>
-    </BrowserRouter>
-  );
-};
 
 describe('Home Component', () => {
   beforeEach(() => {

@@ -1,13 +1,9 @@
-import React from 'react';
 import {
   Container,
   Paper,
   Typography,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
   Box,
   Divider,
@@ -19,6 +15,7 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // Helper to format number with thousand separators for display
 function formatNumberWithThousandSeparators(value: number | string) {
@@ -35,14 +32,14 @@ function parseNumberFromFormatted(value: string) {
 }
 
 // Occupation mapping
-const occupationMap: { [key: string]: string } = {
-  'office': 'Văn phòng',
-  'teacher': 'Giáo viên',
-  'doctor': 'Bác sĩ',
-  'engineer': 'Kỹ sư',
-  'business': 'Kinh doanh',
-  'other': 'Khác'
-};
+const getOccupationMap = (language: 'vi' | 'en') => ({
+  'office': language === 'vi' ? 'Văn phòng' : 'Office Worker',
+  'teacher': language === 'vi' ? 'Giáo viên' : 'Teacher',
+  'doctor': language === 'vi' ? 'Bác sĩ' : 'Doctor',
+  'engineer': language === 'vi' ? 'Kỹ sư' : 'Engineer',
+  'business': language === 'vi' ? 'Kinh doanh' : 'Business',
+  'other': language === 'vi' ? 'Khác' : 'Other'
+});
 
 interface QuoteFormData {
   productType: string;
@@ -60,6 +57,8 @@ interface QuoteFormData {
 
 const QuoteForm: React.FC = () => {
   const { control, handleSubmit, watch, setValue, clearErrors, formState: { errors } } = useForm<QuoteFormData>();
+  const { language, t } = useLanguage();
+  const occupationMap = getOccupationMap(language);
   const sameAsInsured = watch('sameAsInsured', false);
 
   // Snackbar state for notifications
@@ -95,16 +94,16 @@ const QuoteForm: React.FC = () => {
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
-  // Function to convert occupation value to Vietnamese name
+  // Function to convert occupation value to localized name
   const getOccupationName = (occupationValue: string) => {
-    return occupationMap[occupationValue] || occupationValue;
+    return occupationMap[occupationValue as keyof typeof occupationMap] || occupationValue;
   };
 
   const onSubmit = async (data: QuoteFormData) => {
     // Validate required fields manually (in case react-hook-form validation is bypassed)
     // Check for missing required fields and show specific message
     if (!data.productType || data.productType === '') {
-      showSnackbar('Vui lòng chọn loại sản phẩm.', 'error');
+      showSnackbar(t.quote.validation.selectProduct, 'error');
       return;
     }
     const requiredFields = [
@@ -126,11 +125,19 @@ const QuoteForm: React.FC = () => {
       return;
     }
     try {
-      // Convert the Vietnamese form data to the backend format
-      const purchaserFullName = `Khách hàng ${data.purchaserGender === 'male' ? 'Nam' : 'Nữ'} - Tuổi ${data.purchaserAge} - Nghề nghiệp ${getOccupationName(data.purchaserOccupation)}`;
+      // Convert the form data to the backend format
+      const genderText = language === 'vi' 
+        ? (data.purchaserGender === 'male' ? 'Nam' : 'Nữ')
+        : (data.purchaserGender === 'male' ? 'Male' : 'Female');
+      const customerText = language === 'vi' ? 'Khách hàng' : 'Customer';
+      const ageText = language === 'vi' ? 'Tuổi' : 'Age';
+      const occupationText = language === 'vi' ? 'Nghề nghiệp' : 'Occupation';
+      const insuredPersonText = language === 'vi' ? 'Người được bảo hiểm' : 'Insured Person';
+      
+      const purchaserFullName = `${customerText} ${genderText} - ${ageText} ${data.purchaserAge} - ${occupationText} ${getOccupationName(data.purchaserOccupation)}`;
       const insuredFullName = data.sameAsInsured
         ? purchaserFullName
-        : `Người được bảo hiểm ${data.insuredGender === 'male' ? 'Nam' : 'Nữ'} - Tuổi ${data.insuredAge} - Nghề nghiệp ${getOccupationName(data.insuredOccupation)}`;
+        : `${insuredPersonText} ${data.insuredGender === 'male' ? genderText : (language === 'vi' ? 'Nữ' : 'Female')} - ${ageText} ${data.insuredAge} - ${occupationText} ${getOccupationName(data.insuredOccupation)}`;
 
       const backendData = {
         purchaserName: purchaserFullName,
@@ -143,10 +150,10 @@ const QuoteForm: React.FC = () => {
       };
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/quote`, backendData);
       console.log('Quote submitted:', response.data);
-      showSnackbar('Báo giá đã được gửi thành công!', 'success');
+      showSnackbar(t.quote.notifications.submitSuccess, 'success');
     } catch (error) {
       console.error('Error submitting quote:', error);
-      showSnackbar('Có lỗi xảy ra khi gửi báo giá. Vui lòng thử lại.', 'error');
+      showSnackbar(t.quote.notifications.submitError, 'error');
     }
   };
 
@@ -159,27 +166,27 @@ const QuoteForm: React.FC = () => {
             {/* Product Type Section */}
             <Box>
               <Typography variant="h6" gutterBottom>
-                Loại sản phẩm
+                {t.quote.productType}
               </Typography>
               <Controller
                 name="productType"
                 control={control}
                 defaultValue=""
-                rules={{ required: 'Vui lòng chọn loại sản phẩm' }}
+                rules={{ required: t.quote.validation.selectProduct }}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     select
                     fullWidth
-                    label="Chọn"
+                    label={language === 'vi' ? 'Chọn' : 'Select'}
                     error={!!errors.productType}
                     helperText={errors.productType?.message}
                   >
-                    <MenuItem value="">Chọn</MenuItem>
-                    <MenuItem value="life">Bảo hiểm nhân thọ</MenuItem>
-                    <MenuItem value="health">Bảo hiểm sức khỏe</MenuItem>
-                    <MenuItem value="accident">Bảo hiểm tai nạn</MenuItem>
-                    <MenuItem value="travel">Bảo hiểm du lịch</MenuItem>
+                    <MenuItem value="">{language === 'vi' ? 'Chọn' : 'Select'}</MenuItem>
+                    <MenuItem value="life">{t.insuranceTypes.life}</MenuItem>
+                    <MenuItem value="health">{t.insuranceTypes.health}</MenuItem>
+                    <MenuItem value="accident">{language === 'vi' ? 'Bảo hiểm tai nạn' : 'Accident Insurance'}</MenuItem>
+                    <MenuItem value="travel">{t.insuranceTypes.travel}</MenuItem>
                   </TextField>
                 )}
               />
@@ -198,7 +205,7 @@ const QuoteForm: React.FC = () => {
                   mr: 1
                 }} />
                 <Typography variant="h6">
-                  Bên mua bảo hiểm
+                  {t.quote.purchaserInfo}
                 </Typography>
               </Box>
 
@@ -208,19 +215,19 @@ const QuoteForm: React.FC = () => {
                     name="purchaserGender"
                     control={control}
                     defaultValue=""
-                    rules={{ required: 'Vui lòng chọn giới tính' }}
+                    rules={{ required: t.quote.validation.enterGender }}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         select
                         fullWidth
-                        label="Giới tính"
+                        label={t.quote.gender}
                         error={!!errors.purchaserGender}
                         helperText={errors.purchaserGender?.message}
                       >
-                        <MenuItem value="">Chọn</MenuItem>
-                        <MenuItem value="male">Nam</MenuItem>
-                        <MenuItem value="female">Nữ</MenuItem>
+                        <MenuItem value="">{language === 'vi' ? 'Chọn' : 'Select'}</MenuItem>
+                        <MenuItem value="male">{language === 'vi' ? 'Nam' : 'Male'}</MenuItem>
+                        <MenuItem value="female">{language === 'vi' ? 'Nữ' : 'Female'}</MenuItem>
                       </TextField>
                     )}
                   />
@@ -230,11 +237,12 @@ const QuoteForm: React.FC = () => {
                     name="purchaserAge"
                     control={control}
                     defaultValue="" rules={{
-                      required: 'Vui lòng nhập tuổi',
+                      required: t.quote.validation.enterAge,
                       validate: value => {
                         const num = Number(value);
+                        const errorMessage = language === 'vi' ? 'Tuổi phải từ 18 trở lên' : 'Age must be 18 or older';
                         if (isNaN(num) || num < 18) {
-                          return 'Tuổi phải từ 18 trở lên';
+                          return errorMessage;
                         }
                         return true;
                       }
@@ -243,9 +251,9 @@ const QuoteForm: React.FC = () => {
                       <TextField
                         {...field}
                         fullWidth
-                        label="Tuổi"
+                        label={t.quote.age}
                         type="number"
-                        placeholder="Nhập"
+                        placeholder={language === 'vi' ? 'Nhập' : 'Enter'}
                         error={!!errors.purchaserAge}
                         helperText={errors.purchaserAge?.message}
                         InputProps={{
@@ -270,17 +278,17 @@ const QuoteForm: React.FC = () => {
                     name="purchaserOccupation"
                     control={control}
                     defaultValue=""
-                    rules={{ required: 'Vui lòng chọn nghề nghiệp' }}
+                    rules={{ required: t.quote.validation.enterOccupation }}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         select
                         fullWidth
-                        label="Loại nghề nghiệp"
+                        label={t.quote.occupation}
                         error={!!errors.purchaserOccupation}
                         helperText={errors.purchaserOccupation?.message}
                       >
-                        <MenuItem value="">Chọn</MenuItem>
+                        <MenuItem value="">{language === 'vi' ? 'Chọn' : 'Select'}</MenuItem>
                         {Object.entries(occupationMap).map(([value, label]) => (
                           <MenuItem key={value} value={value}>{label}</MenuItem>
                         ))}
@@ -305,7 +313,7 @@ const QuoteForm: React.FC = () => {
                     )}
                   />
                 }
-                label="Thông tin Bên mua bảo hiểm & Bên được bao hiểm giống nhau:"
+                label={t.quote.sameAsInsured}
                 sx={{ mt: 2 }}
               />
             </Box>
@@ -323,7 +331,7 @@ const QuoteForm: React.FC = () => {
                   mr: 1
                 }} />
                 <Typography variant="h6">
-                  Bên được bảo hiểm
+                  {t.quote.insuredInfo}
                 </Typography>
               </Box>
 
@@ -558,7 +566,7 @@ const QuoteForm: React.FC = () => {
                   fontWeight: 'bold'
                 }}
               >
-                Go!!
+                {t.quote.submitButton}
               </Button>
             </Box>
           </Box>        </Box>
