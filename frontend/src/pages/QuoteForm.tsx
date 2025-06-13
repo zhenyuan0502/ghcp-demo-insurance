@@ -39,8 +39,8 @@ interface QuoteFormData {
   insuredGender: string;
   insuredAge: number | string;
   insuredOccupation: string;
-  monthlyPremium: number;
-  yearlyPremium: number;
+  estimatedCostPerMonth: number;
+  exactCostPerMonth: number;
   insuranceAmount: number;
   sameAsInsured: boolean;
 }
@@ -103,8 +103,8 @@ const QuoteForm: React.FC = () => {
       data.insuredGender,
       data.insuredAge,
       data.insuredOccupation,
-      data.monthlyPremium,
-      data.yearlyPremium,
+      data.estimatedCostPerMonth,
+      data.exactCostPerMonth,
       data.insuranceAmount
     ];
     const hasEmpty = requiredFields.some(
@@ -442,7 +442,7 @@ const QuoteForm: React.FC = () => {
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 200px' }}>
                   <Controller
-                    name="monthlyPremium"
+                    name="estimatedCostPerMonth"
                     control={control}
                     defaultValue={0}
                     render={({ field: { onChange, value, ...rest } }) => (
@@ -476,7 +476,7 @@ const QuoteForm: React.FC = () => {
 
                 <Box sx={{ flex: '1 1 200px' }}>
                   <Controller
-                    name="yearlyPremium"
+                    name="exactCostPerMonth"
                     control={control}
                     defaultValue={0}
                     render={({ field: { onChange, value, ...rest } }) => (
