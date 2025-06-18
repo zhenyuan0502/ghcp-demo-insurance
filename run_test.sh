@@ -90,7 +90,7 @@ else
     fi
 
     echo "Running React tests..."
-    if npm test -- --watchAll=false --passWithNoTests; then
+    if npm test; then
         echo "✅ React frontend tests PASSED"
         test_results+=("Frontend-React: PASSED")
     else

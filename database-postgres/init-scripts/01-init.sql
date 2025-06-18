@@ -33,7 +33,7 @@ INSERT INTO quote (purchaser_name, insured_name, email, phone, insurance_type, c
 ('Ngô Thị Hương', 'Ngô Thị Hương', 'ngo.thi.huong@example.com', '0967890123', 'health', '2500000000', 29, 17000000, 'pending'),
 ('Bùi Văn Ích', 'Bùi Văn Ích', 'bui.van.ich@example.com', '0978901234', 'life', '1800000000', 38, 9775000, 'approved'),
 ('Đinh Thị Kiều', 'Đinh Thị Kiều', 'dinh.thi.kieu@example.com', '0989012345', 'auto', '1200000000', 27, 15300000, 'pending');
-ON CONFLICT DO NOTHING;
+
 
 -- Grant necessary permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO insurance_user;

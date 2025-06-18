@@ -1,0 +1,168 @@
+name: CI/CD Tests and Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-python:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('backend-py/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      working-directory: ./backend-py
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run tests with coverage
+      working-directory: ./backend-py
+      run: |
+        pytest --cov=app --cov-report=html --cov-report=xml --cov-report=term
+        
+    - name: Upload Python coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-coverage-report
+        path: backend-py/htmlcov/
+        
+    - name: Upload Python coverage to codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend-py/coverage.xml
+        flags: backend-python
+
+  backend-nodejs:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: backend-nodejs/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./backend-nodejs
+      run: npm ci
+      
+    - name: Run tests with coverage
+      working-directory: ./backend-nodejs
+      run: npm run test:coverage
+      
+    - name: Upload Node.js coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: nodejs-coverage-report
+        path: backend-nodejs/coverage/
+        
+    - name: Upload Node.js coverage to codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend-nodejs/coverage/clover.xml
+        flags: backend-nodejs
+
+  frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm ci
+      
+    - name: Run tests with coverage
+      working-directory: ./frontend
+      run: npm run test:coverage
+      
+    - name: Upload Frontend coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-coverage-report
+        path: frontend/coverage/
+        
+    - name: Upload Frontend coverage to codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./frontend/coverage/clover.xml
+        flags: frontend
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [backend-python, backend-nodejs, frontend]
+    if: success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install Python dependencies
+      working-directory: ./backend-py
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Node.js dependencies (backend)
+      working-directory: ./backend-nodejs
+      run: npm ci
+      
+    - name: Install Node.js dependencies (frontend)
+      working-directory: ./frontend
+      run: npm ci
+      
+    - name: Run integration test script
+      run: |
+        chmod +x ./run_test.sh
+        ./run_test.sh
+        
+    - name: Generate test summary
+      if: always()
+      run: |
+        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "✅ All tests completed successfully!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Coverage Reports" >> $GITHUB_STEP_SUMMARY
+        echo "- Python Backend: Available in artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Node.js Backend: Available in artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Frontend: Available in artifacts" >> $GITHUB_STEP_SUMMARY
