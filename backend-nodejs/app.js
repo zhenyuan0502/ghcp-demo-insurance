@@ -106,6 +106,128 @@ const Quote = sequelize.define('Quote', {
   timestamps: false
 });
 
+// Claim Model
+const Claim = sequelize.define('Claim', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  // Policyholder Information
+  policyholderName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    field: 'policyholder_name'
+  },
+  policyNumber: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    field: 'policy_number'
+  },
+  contactNumber: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    field: 'contact_number'
+  },
+  email: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
+  // Incident Details
+  incidentDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+    field: 'incident_date'
+  },
+  incidentTime: {
+    type: DataTypes.TIME,
+    allowNull: false,
+    field: 'incident_time'
+  },
+  incidentLocation: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    field: 'incident_location'
+  },
+  incidentDescription: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    field: 'incident_description'
+  },
+  claimType: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    field: 'claim_type'
+  },
+  // Claim Details
+  estimatedCost: {
+    type: DataTypes.DECIMAL(15, 2),
+    allowNull: false,
+    field: 'estimated_cost'
+  },
+  itemsAffected: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    field: 'items_affected'
+  },
+  policeReportFiled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'police_report_filed'
+  },
+  policeReportNumber: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    field: 'police_report_number'
+  },
+  // Banking Information
+  bankName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    field: 'bank_name'
+  },
+  accountHolderName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    field: 'account_holder_name'
+  },
+  accountNumber: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    field: 'account_number'
+  },
+  swiftCode: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    field: 'swift_code'
+  },
+  // Declaration
+  informationConfirmed: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'information_confirmed'
+  },
+  signature: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
+  // Status and timestamps
+  status: {
+    type: DataTypes.STRING(20),
+    defaultValue: 'submitted'
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    field: 'created_at'
+  }
+}, {
+  tableName: 'claim',
+  timestamps: false
+});
+
 // Premium calculation logic for VND currency
 function calculatePremium(insuranceType, coverageAmount, age) {
   // Base rates as expected by the tests (annual rates)
@@ -304,6 +426,167 @@ app.delete('/api/quotes/:id', async (req, res) => {
   }
 });
 
+// Claim Routes
+// Create claim
+app.post('/api/claim', async (req, res) => {
+  try {
+    const data = req.body;
+
+    const claim = await Claim.create({
+      policyholderName: data.policyholderName,
+      policyNumber: data.policyNumber,
+      contactNumber: data.contactNumber,
+      email: data.email,
+      incidentDate: data.incidentDate,
+      incidentTime: data.incidentTime,
+      incidentLocation: data.incidentLocation,
+      incidentDescription: data.incidentDescription,
+      claimType: data.claimType,
+      estimatedCost: data.estimatedCost,
+      itemsAffected: data.itemsAffected,
+      policeReportFiled: data.policeReportFiled,
+      policeReportNumber: data.policeReportNumber || null,
+      bankName: data.bankName,
+      accountHolderName: data.accountHolderName,
+      accountNumber: data.accountNumber,
+      swiftCode: data.swiftCode || null,
+      informationConfirmed: data.informationConfirmed,
+      signature: data.signature
+    });
+
+    res.status(201).json({
+      message: 'Claim submitted successfully',
+      claim: {
+        id: claim.id,
+        policyholderName: claim.policyholderName,
+        policyNumber: claim.policyNumber,
+        contactNumber: claim.contactNumber,
+        email: claim.email,
+        incidentDate: claim.incidentDate,
+        incidentTime: claim.incidentTime,
+        incidentLocation: claim.incidentLocation,
+        incidentDescription: claim.incidentDescription,
+        claimType: claim.claimType,
+        estimatedCost: claim.estimatedCost,
+        itemsAffected: claim.itemsAffected,
+        policeReportFiled: claim.policeReportFiled,
+        policeReportNumber: claim.policeReportNumber,
+        bankName: claim.bankName,
+        accountHolderName: claim.accountHolderName,
+        accountNumber: claim.accountNumber,
+        swiftCode: claim.swiftCode,
+        informationConfirmed: claim.informationConfirmed,
+        signature: claim.signature,
+        status: claim.status,
+        createdAt: claim.createdAt.toISOString()
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Get all claims
+app.get('/api/claims', async (req, res) => {
+  try {
+    const claims = await Claim.findAll({
+      order: [['createdAt', 'DESC']]
+    });
+
+    const claimsData = claims.map(claim => ({
+      id: claim.id,
+      policyholderName: claim.policyholderName,
+      policyNumber: claim.policyNumber,
+      contactNumber: claim.contactNumber,
+      email: claim.email,
+      incidentDate: claim.incidentDate,
+      incidentTime: claim.incidentTime,
+      incidentLocation: claim.incidentLocation,
+      incidentDescription: claim.incidentDescription,
+      claimType: claim.claimType,
+      estimatedCost: typeof claim.estimatedCost === 'string' ? Number(claim.estimatedCost) : claim.estimatedCost,
+      itemsAffected: claim.itemsAffected,
+      policeReportFiled: claim.policeReportFiled,
+      policeReportNumber: claim.policeReportNumber,
+      bankName: claim.bankName,
+      accountHolderName: claim.accountHolderName,
+      accountNumber: claim.accountNumber,
+      swiftCode: claim.swiftCode,
+      informationConfirmed: claim.informationConfirmed,
+      signature: claim.signature,
+      status: claim.status,
+      createdAt: claim.createdAt ? claim.createdAt.toISOString() : null
+    }));
+
+    res.json(claimsData);
+  } catch (error) {
+    console.error('Error fetching claims:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Get specific claim
+app.get('/api/claim/:id', async (req, res) => {
+  try {
+    const claim = await Claim.findByPk(req.params.id);
+
+    if (!claim) {
+      return res.status(404).json({ error: 'Claim not found' });
+    }
+
+    res.json({
+      id: claim.id,
+      policyholderName: claim.policyholderName,
+      policyNumber: claim.policyNumber,
+      contactNumber: claim.contactNumber,
+      email: claim.email,
+      incidentDate: claim.incidentDate,
+      incidentTime: claim.incidentTime,
+      incidentLocation: claim.incidentLocation,
+      incidentDescription: claim.incidentDescription,
+      claimType: claim.claimType,
+      estimatedCost: claim.estimatedCost,
+      itemsAffected: claim.itemsAffected,
+      policeReportFiled: claim.policeReportFiled,
+      policeReportNumber: claim.policeReportNumber,
+      bankName: claim.bankName,
+      accountHolderName: claim.accountHolderName,
+      accountNumber: claim.accountNumber,
+      swiftCode: claim.swiftCode,
+      informationConfirmed: claim.informationConfirmed,
+      signature: claim.signature,
+      status: claim.status,
+      createdAt: claim.createdAt.toISOString()
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Update claim status
+app.put('/api/claim/:id/status', async (req, res) => {
+  try {
+    const claim = await Claim.findByPk(req.params.id);
+
+    if (!claim) {
+      return res.status(404).json({ error: 'Claim not found' });
+    }
+
+    claim.status = req.body.status;
+    await claim.save();
+
+    res.json({
+      id: claim.id,
+      policyholderName: claim.policyholderName,
+      policyNumber: claim.policyNumber,
+      status: claim.status,
+      createdAt: claim.createdAt.toISOString()
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
@@ -332,7 +615,7 @@ async function startServer() {
 }
 
 // Export for testing
-module.exports = { app, calculatePremium, sequelize, Quote };
+module.exports = { app, calculatePremium, sequelize, Quote, Claim };
 
 // Start server only if this file is run directly
 if (require.main === module) {

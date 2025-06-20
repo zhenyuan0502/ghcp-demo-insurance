@@ -28,6 +28,9 @@ const Navbar: React.FC = () => {
         <Button color="inherit" component={Link} to="/quote">
           {t.navbar.quote}
         </Button>
+        <Button color="inherit" component={Link} to="/claim">
+          {t.navbar.claim}
+        </Button>
         <Button color="inherit" component={Link} to="/dashboard">
           {t.navbar.dashboard}
         </Button>

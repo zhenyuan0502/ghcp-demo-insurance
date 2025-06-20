@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import QuoteForm from './pages/QuoteForm';
+import ClaimForm from './pages/ClaimForm';
 import Dashboard from './pages/Dashboard';
 import { LanguageContext, LanguageContextType } from './i18n/LanguageContext';
 import { Language, getTranslations } from './i18n/translations';
@@ -113,6 +114,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/quote" element={<QuoteForm />} />
+                <Route path="/claim" element={<ClaimForm />} />
                 <Route path="/dashboard" element={<Dashboard />} />
               </Routes>
             </div>
